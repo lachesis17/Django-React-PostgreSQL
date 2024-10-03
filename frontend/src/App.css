@@ -1,0 +1,61 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+    /* background: linear-gradient(-90deg, rgb(40, 44, 52), rgb(20, 20, 20), rgb(40, 44, 52), rgb(20, 20, 20));
+  background-size: 4000% 200%;
+  animation: gradientAnimation 15s ease infinite; */
+  background: linear-gradient(270deg, #282c34, #141414);
+  background-size: 400% 400%;
+  -webkit-animation: gradientAnimation 12s ease infinite;
+  -moz-animation: gradientAnimation 12s ease infinite;
+  animation: gradientAnimation 12s ease infinite;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes gradientAnimation {
+  0% {background-position: 0% 50%}
+  50% {background-position: 100% 50%}
+  100% {background-position: 0% 50%}
+}
+@-moz-keyframes gradientAnimation {
+  0% {background-position: 0% 50%}
+  50% {background-position: 100% 50%}
+  100% {background-position: 0% 50%}
+}
+@keyframes gradientAnimation {
+  0% {background-position: 0% 50%}
+  50% {background-position: 100% 50%}
+  100% {background-position: 0% 50%}
+}

@@ -1,0 +1,25 @@
+# dependencies
+frontend/node_modules
+
+# production
+frontend/build
+djangoUnchained/staticfiles
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vercel
+
+djangoUnchained/core/__pycache__/
+djangoUnchained/core/migrations/__pycache__/
+djangoUnchained/djangoUnchained/__pycache__/
+*.pyc
+
+djangoUnchained/djangoUnchained/*.env
