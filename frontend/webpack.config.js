@@ -47,7 +47,8 @@ module.exports = {
         { from: 'public/logo192.png', to: 'logo192.png' },
         { from: 'public/logo512.png', to: 'logo512.png' },
         { from: 'public/manifest.json', to: 'manifest.json' },
-        { from: 'public/robots.txt', to: 'robots.txt' }
+        { from: 'public/robots.txt', to: 'robots.txt' },
+        { from: 'build', to: path.resolve(__dirname, '../djangoUnchained/core/static/build') }
       ]
     })
   ],

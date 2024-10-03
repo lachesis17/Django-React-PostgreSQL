@@ -7,6 +7,7 @@ django.setup()
 from core.models import CptData
 
 def populate_database():
+    CptData.objects.all().delete()
     data = [
     (0, -0.04878821, 0.000925849),
     (0.01, -0.04878821, 0.000627519),
@@ -205,6 +206,6 @@ def populate_database():
     ]
 
     for depth, qc, fs in data:
-        CptData.objects.create(depth=depth, qc=qc, fs=fs)
+        CptData.objects.create(depth=depth, qc=qc, fs=(fs*1000)/20)
         
 populate_database()
