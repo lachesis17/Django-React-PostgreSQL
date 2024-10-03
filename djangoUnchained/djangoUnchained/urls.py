@@ -25,11 +25,12 @@ from django.contrib.staticfiles.views import serve
 from django.views.generic import TemplateView
 from django.conf import settings
 import os
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     #path('', home, name='home'),
     path('admin/', admin.site.urls),
-    path("graphql", GraphQLView.as_view(graphiql=True, schema=schema)),
+    path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
     #re_path(r'^(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, 'core/static/build'), 'show_indexes': True}),
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='home'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

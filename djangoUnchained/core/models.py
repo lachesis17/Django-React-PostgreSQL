@@ -6,3 +6,11 @@ class Item(models.Model):
 
     def __str__(self):
         return self.name
+
+class CptData(models.Model):
+    depth = models.FloatField()
+    qc = models.FloatField()
+    fs = models.FloatField()
+
+    def __str__(self):
+        return f"{self.depth} - QC: {self.qc}, FS: {self.fs}"

@@ -90,3 +90,17 @@ build react app and move build folder to static folder in django
 update urls.py to include build/index.html
 update settings.py to include core/static/build to DIRS in TEMPLATES
 ```
+
+Get data in DB and plot with GraphQL and visualise with recharts
+
+```
+add a class to core/models.py to define a new database table/fields
+import class to schema to server on django api endpoint via graphene
+?????
+data goes into database (make script, import table class from model, loop through tuple data, model_class.objects.create(tuple_data_vars))
+npm install recharts
+import useQuery and recharts stuff to App.js
+def var to query data from graphql using apollo
+def func to useQuery(query_var) and return LineChart from recharts plotting the data, add as a div like a react component
+add csrf_exempt() wrapper to GraphQLView in urls.py to bypass 403
+```
