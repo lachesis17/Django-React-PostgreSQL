@@ -39,7 +39,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
-      favicon: './public/favicon.ico'  // Adding favicon through HtmlWebpackPlugin
+      favicon: './public/favicon.ico',  // Adding favicon through HtmlWebpackPlugin
+      inject: false,  // Disable automatic asset injection
+      scriptLoading: 'defer',  // Use 'defer' for script loading if you manually add scripts
     }),
     new CopyPlugin({
       patterns: [

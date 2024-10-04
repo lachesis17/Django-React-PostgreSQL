@@ -221,3 +221,10 @@ body {
     max-width: 40%;
   }
 }
+
+.recharts-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-left: -8%;
+  width: 100%;
+}

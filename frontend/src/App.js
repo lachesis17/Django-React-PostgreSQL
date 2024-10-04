@@ -21,14 +21,18 @@ function CptDataChart() {
   if (error) return <p>Error loading chart data: {error.message}</p>;
 
   return (
-    <LineChart width={900} height={450} data={data.allCptData}
-      margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
-      <CartesianGrid strokeDasharray="4 4" />
-      <XAxis dataKey="depth" tick={{ fontSize: '14px' }} />
-      <YAxis tick={{ fontSize: '14px' }} />
+    <LineChart 
+      width={700} 
+      height={500} 
+      layout="vertical" 
+      data={data.allCptData}
+      margin={{ top: 5, right: 0, bottom: 10, left: 100 }}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis type="number" tick={{ fontSize: '14px' }} />
+      <YAxis dataKey="depth" type="number" tick={{ fontSize: '14px' }} />
       <Tooltip />
-      <Legend />
-      <Line type="monotone" dataKey="qc" stroke="#8884d8" activeDot={{ r: 8 }} />
+      <Legend wrapperStyle={{ marginLeft: 30 }}/>
+      <Line type="monotone" dataKey="qc" stroke="#8884d8" />
       <Line type="monotone" dataKey="fs" stroke="#82ca9d" />
     </LineChart>
   );
