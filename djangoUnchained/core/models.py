@@ -9,8 +9,9 @@ class Item(models.Model):
 
 class CptData(models.Model):
     depth = models.FloatField()
-    qc = models.FloatField()
-    fs = models.FloatField()
+    qc = models.FloatField(null=True)
+    fs = models.FloatField(null=True)
+    u = models.FloatField(null=True)
 
     def __str__(self):
-        return f"{self.depth} - QC: {self.qc}, FS: {self.fs}"
+        return f"{self.depth} - QC: {self.qc}, FS: {self.fs}, U: {self.u}"

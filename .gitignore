@@ -23,3 +23,6 @@ djangoUnchained/djangoUnchained/__pycache__/
 *.pyc
 
 djangoUnchained/djangoUnchained/*.env
+
+*.xlsx
+*.csv

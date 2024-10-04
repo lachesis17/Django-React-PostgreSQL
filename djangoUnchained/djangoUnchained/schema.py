@@ -5,7 +5,7 @@ from core.models import CptData
 class CptDataType(DjangoObjectType):
     class Meta:
         model = CptData
-        fields = ("depth", "qc", "fs")
+        fields = ("depth", "qc", "fs", "u")
 
 class Query(graphene.ObjectType):
     all_cpt_data = graphene.List(CptDataType)

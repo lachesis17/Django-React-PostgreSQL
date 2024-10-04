@@ -4,7 +4,7 @@ import './App.css';
 import { useQuery, gql } from '@apollo/client';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-const GET_CPT_DATA = gql`
+const GET_QC_FS = gql`
   {
     allCptData {
       depth
@@ -14,8 +14,17 @@ const GET_CPT_DATA = gql`
   }
 `;
 
-function CptDataChart() {
-  const { loading, error, data } = useQuery(GET_CPT_DATA);
+const GET_U = gql`
+  {
+    allCptData {
+      depth
+      u
+    }
+  }
+`;
+
+function QcFsChart() {
+  const { loading, error, data } = useQuery(GET_QC_FS);
 
   if (loading) return <p>Loading chart data...</p>;
   if (error) return <p>Error loading chart data: {error.message}</p>;
@@ -38,6 +47,29 @@ function CptDataChart() {
   );
 }
 
+function UChart() {
+  const { loading, error, data } = useQuery(GET_U);
+
+  if (loading) return <p>Loading chart data...</p>;
+  if (error) return <p>Error loading chart data: {error.message}</p>;
+
+  return (
+    <LineChart 
+      width={700} 
+      height={500} 
+      layout="vertical" 
+      data={data.allCptData}
+      margin={{ top: 5, right: 0, bottom: 10, left: 100 }}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis type="number" tick={{ fontSize: '14px' }} />
+      <YAxis dataKey="depth" type="number" tick={{ fontSize: '14px' }} />
+      <Tooltip />
+      <Legend wrapperStyle={{ marginLeft: 30 }}/>
+      <Line type="monotone" dataKey="u" stroke="#ca8282" />
+    </LineChart>
+  );
+}
+
 function App() {
   const [fade_header, setFadeInHeader] = useState(false); // states for rendering with a fade animation
   const [fade_chart, setFadeInTextInput] = useState(false);
@@ -55,7 +87,9 @@ function App() {
         <CSSTransition in={fade_header} timeout={1250} classNames="fade" unmountOnExit>
           <h1 className="Headers">Such homepage, many wow.</h1></CSSTransition>
         <CSSTransition in={fade_chart} timeout={1250} classNames="fade" unmountOnExit>
-          <CptDataChart /></CSSTransition>
+          <div className="chart-container">
+            <QcFsChart /><UChart />
+            </div></CSSTransition>
         <CSSTransition in={fade_img} timeout={1250} classNames="fade" unmountOnExit>
           <a href="https://github.com/lachesis17/" className="git-link"><img id="git" src="static/build/gitLogo.png" alt="" width="200px" height="200px" /></a></CSSTransition>
       </header>
