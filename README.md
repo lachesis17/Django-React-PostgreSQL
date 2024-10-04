@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/9a0a39bf-99f7-4413-9c98-000e983574ce
+
 # Django Commands and Workflow
 
 ```
