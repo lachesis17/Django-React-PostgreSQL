@@ -41,8 +41,8 @@ function QcFsChart() {
       <YAxis dataKey="depth" type="number" tick={{ fontSize: '14px' }} />
       <Tooltip />
       <Legend wrapperStyle={{ marginLeft: 30 }}/>
-      <Line type="monotone" dataKey="qc" stroke="#8884d8" />
-      <Line type="monotone" dataKey="fs" stroke="#82ca9d" />
+      <Line type="monotone" dataKey="qc" stroke="#8884d8" dot={{ r: 2, fill: '#8884d8', stroke: '#ffffff', strokeWidth: 0.66 }} />
+      <Line type="monotone" dataKey="fs" stroke="#82ca9d" dot={{ r: 2, fill: '#82ca9d', stroke: '#ffffff', strokeWidth: 0.66 }} />
     </LineChart>
   );
 }
@@ -65,7 +65,7 @@ function UChart() {
       <YAxis dataKey="depth" type="number" tick={{ fontSize: '14px' }} />
       <Tooltip />
       <Legend wrapperStyle={{ marginLeft: 30 }}/>
-      <Line type="monotone" dataKey="u" stroke="#ca8282" />
+      <Line type="monotone" dataKey="u" stroke="#ca8282" dot={{ r: 2, fill: '#ca8282', stroke: '#ffffff', strokeWidth: 0.66 }} />
     </LineChart>
   );
 }
