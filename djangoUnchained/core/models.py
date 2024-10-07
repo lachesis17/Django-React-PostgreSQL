@@ -8,6 +8,8 @@ class CptData(models.Model):
 
     def __str__(self):
         return f"{self.depth} - QC: {self.qc}, FS: {self.fs}, U: {self.u}"
+    
+'''==================================== PROJECT ===================================='''
 
 class PROJ(models.Model):
     PROJ_ID = models.CharField(max_length=50, primary_key=True, verbose_name='Project Identifier')
@@ -21,6 +23,8 @@ class PROJ(models.Model):
 
     def __str__(self):
         return f"{self.PROJ_ID} - {self.PROJ_NAME} Client: {self.PROJ_CLNT}"
+    
+'''==================================== LOCATION ===================================='''
     
 class LOCA(models.Model):
     PROJ_ID = models.ForeignKey(PROJ, on_delete=models.CASCADE, related_name='locations',verbose_name='Project Identifier')
@@ -80,6 +84,8 @@ class LOCA(models.Model):
     def get_start_end(self):
         return f"Start: {self.LOCA_STAR} End: {self.LOCA_ENDD}"
     
+'''==================================== SAMPLE INFORMATION ===================================='''
+    
 class SAMP(models.Model):
     LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='samples')
 
@@ -124,6 +130,8 @@ class SAMP(models.Model):
     def get_sample(self):
         return f"{self.LOCA_ID} - Top Depth: {self.SAMP_TOP} Ref: {self.SAMP_REF} Type: {self.SAMP_TYPE} ID: {self.SAMP_ID}"
     
+'''==================================== GEOLOGY ===================================='''
+
 class GEOL(models.Model):
     LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='geology_descriptions', verbose_name='Location Identifier')
 
@@ -159,6 +167,8 @@ class DREM(models.Model):
     def get_layers(self):
         return f"Loca: {self.LOCA_ID} Top: {self.DREM_TOP} Bot: {self.DREM_BASE} Desc: {self.DREM_REM}"
     
+'''==================================== CPT DATA ===================================='''
+
 class SCPG(models.Model):
     LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='cone_penetration_tests')
 
@@ -225,8 +235,86 @@ class SCPT(models.Model):
     def __str__(self):
         return f"{self.SCPG_TESN} - Depth: {self.SCPT_DPTH}m"
     
+'''==================================== LAB RESULTS ===================================='''
 
+class LNMC(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='moisture_content', verbose_name='Sample ID')
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
+    SPEC_DEPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen (m)')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    LNMC_MC = models.FloatField(verbose_name='Water/Moisture Content (%)')
+    LNMC_TEMP = models.FloatField(verbose_name='Temperature Sample Dried at (°C)')
+    LNMC_STAB = models.FloatField(verbose_name='Amount of Stabiliser Added (%)')
+    LNMC_STYP = models.CharField(max_length=50, verbose_name='Type of Stabiliser Added')
+    LNMC_INST = models.CharField(max_length=2, verbose_name='Is Test Result Assumed to be Natural Water/Moisture Content')
+    LNMC_COMM = models.TextField(verbose_name='Reason Water/Moisture Content is Assumed to be Other than Natural')
+    LNMC_REM = models.TextField(verbose_name='Remarks')
+    LNMC_METH = models.CharField(max_length=50, verbose_name='Test Method')
+    LNMC_LAB = models.CharField(max_length=100, verbose_name='Name of Testing Laboratory/Organization')
+    LNMC_CRED = models.CharField(max_length=50, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+    SPEC_BASE = models.FloatField(verbose_name='Depth to Base of Specimen (m)')
+    LNMC_DEV = models.TextField(verbose_name='Deviation from the Specified Procedure', blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.SAMP_ID} - {self.LNMC_MC}% Moisture Content"
+
+class GRAG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='particle_size_distribution', verbose_name='Sample ID')
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
+    SPEC_DEPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen (m)')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    GRAG_UC = models.FloatField(verbose_name='Uniformity Coefficient (D60/D10)')
+    GRAG_CC = models.FloatField(verbose_name='Coefficient of Curvature')
+    GRAG_VCRE = models.FloatField(verbose_name='Percentage of Material Tested Greater than 63mm (%)')
+    GRAG_GRAV = models.FloatField(verbose_name='Percentage of Material Tested in Range 63mm to 2mm (%)')
+    GRAG_SAND = models.FloatField(verbose_name='Percentage of Material Tested in Range 2mm to 63um (%)')
+    GRAG_SILT = models.FloatField(verbose_name='Percentage of Material Tested in Range 63um to 2um (%)')
+    GRAG_CLAY = models.FloatField(verbose_name='Percentage of Material Tested Less than 2um (%)')
+    GRAG_FINE = models.FloatField(verbose_name='Percentage Less than 63um (%)')
+    GRAG_REM = models.TextField(verbose_name='Remarks')
+    GRAG_METH = models.CharField(max_length=100, verbose_name='Test Method')
+    GRAG_LAB = models.CharField(max_length=100, verbose_name='Name of Testing Laboratory/Organization')
+    GRAG_CRED = models.CharField(max_length=50, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='Associated File Reference')
+    SPEC_BASE = models.FloatField(verbose_name='Depth to Base of Specimen (m)')
+    GRAG_DEV = models.TextField(verbose_name='Deviation from the Specified Test Procedure')
+    GRAG_PDEN = models.FloatField(verbose_name='Particle Density (Mg/m3)')
+    GRAG_PRET = models.CharField(max_length=255, verbose_name='Method of Pre-treatment')
+    GRAG_SUFF = models.CharField(max_length=2, verbose_name='Sufficiency of Soil Tested')
+    GRAG_EXCL = models.TextField(verbose_name='Exclusion Remark')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - {self.GRAG_FINE}% fines"
+    
+class GRAT(models.Model):
+    SAMP_ID = models.ForeignKey(GRAG, on_delete=models.CASCADE, related_name='particle_size_distribution_data', verbose_name='Sample ID')
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen (m)')
+    GRAT_SIZE = models.FloatField(verbose_name='Sieve or Particle Size (mm)')
+    GRAT_PERP = models.FloatField(verbose_name='Percentage Passing/Finer than GRAT_SIZE (%)')
+    GRAT_TYPE = models.CharField(max_length=50, verbose_name='Test Type')
+    GRAT_REM = models.TextField(verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='Associated File Reference')
+    
+    def __str__(self):
+        return f"{self.SAMP_ID} - {self.GRAT_SIZE} mm - {self.GRAT_PERP} passing (%)"
 
 # Look at trying out Django Forms 
 # from django import forms
