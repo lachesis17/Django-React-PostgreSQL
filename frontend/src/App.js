@@ -85,7 +85,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <CSSTransition in={fade_header} timeout={1250} classNames="fade" unmountOnExit>
-          <h1 className="Headers">Such homepage, many wow.</h1></CSSTransition>
+          <h1 className="Headers">Such homepage, many wow. <img id="doge" src="static/build/doge.png" alt="" width="42px" height="42px" /></h1></CSSTransition>
         <CSSTransition in={fade_chart} timeout={1250} classNames="fade" unmountOnExit>
           <div className="chart-container">
             <QcFsChart /><UChart />
