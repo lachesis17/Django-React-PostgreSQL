@@ -1169,6 +1169,9 @@ class RPLT(models.Model):
     def __str__(self):
         return f"{self.SAMP_ID} - Type: {self.RPLT_PLTF} IS50: {self.RPLT_PLSI}"
     
+
+'''================================= ROCK UCS ===================================='''
+
 class RUCS(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='ucs', verbose_name='Sample ID')
 
@@ -1212,7 +1215,9 @@ class RUCS(models.Model):
 
     def __str__(self):
         return f"{self.SAMP_ID} - UCS: {self.RUCS_UCS} MPa Young's Modulus: {self.RUCS_E} GPa Poisson's Ratio: {self.RUCS_MU}"
-    
+
+'''================================= ROCK MOISTURE ===================================='''
+
 class RWCO(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='rock_moisture', verbose_name='Sample ID')
 
@@ -1238,6 +1243,8 @@ class RWCO(models.Model):
 
     def __str__(self):
         return f"{self.SAMP_ID} - Water Content: {self.RWCO_MC}%"
+
+'''================================= ROCK DENSITY ===================================='''
 
 class RDEN(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='rock_density', verbose_name='Sample ID')
@@ -1269,7 +1276,9 @@ class RDEN(models.Model):
 
     def __str__(self):
         return f"{self.SAMP_ID} - Bulk Density: {self.RDEN_BDEN} kg/m³"
-    
+
+'''================================= ROCK ABRASIVE ====================================''' 
+
 class RCAG(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='rock_abrasive_general', verbose_name='Sample ID')
 
@@ -1324,6 +1333,8 @@ class RCAT(models.Model):
     def __str__(self):
         return f"{self.LOCA_ID} - CAI: {self.RCAT_CAI}"
 
+'''================================= ROCK TENSILE ===================================='''
+
 class RTEN(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='rock_tensile', verbose_name='Sample ID')
 
@@ -1356,8 +1367,10 @@ class RTEN(models.Model):
     def __str__(self):
         return f"{self.LOCA_ID} - Tensile Strength: {self.RTEN_TENS} MPa"
 
+'''================================= CHALK CRUSH ===================================='''
+
 class RCCV(models.Model):
-    SAMP_ID = models.ForeignKey('SAMP', on_delete=models.CASCADE, related_name='chalk_crush', verbose_name='Sample ID')
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='chalk_crush', verbose_name='Sample ID')
 
     LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
     SAMP_TOP = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Sample')
@@ -1382,6 +1395,84 @@ class RCCV(models.Model):
     def __str__(self):
         return f"{self.LOCA_ID} - Crush: {self.RCCV_CCV}"
 
+'''================================= PRESSUREMETER ===================================='''
+
+class PMTG(models.Model):
+    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='pressuremeter_general', verbose_name='Location')
+
+    PMTG_DPTH = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth of Test')
+    PMTG_TESN = models.CharField(max_length=255, verbose_name='Test Reference')
+    PMTG_DATE = models.DateField(verbose_name='Date of Test')
+    PMTG_WAT = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Measured or Assumed Ground Water Level')
+    PMTG_CONT = models.CharField(max_length=255, verbose_name='Subcontractors Name')
+    PMTG_CREW = models.CharField(max_length=255, verbose_name='Operators Details')
+    PMTG_REF = models.CharField(max_length=255, verbose_name='Instrument Reference / Serial Number')
+    PMTG_TYPE = models.CharField(max_length=255, verbose_name='Pressuremeter Type')
+    PMTG_DIAM = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Uninflated Diameter of Pressuremeter')
+    PMTG_HO = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Estimated in Situ Horizontal Stress')
+    PMTG_GI = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Initial Shear Modulus')
+    PMTG_CU = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Undrained Shear Strength')
+    PMTG_PL = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Limit Pressure')
+    PMTG_AF = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Angle of Friction')
+    PMTG_AD = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Angle of Dilation')
+    PMTG_AFCV = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Angle of Friction at Constant Volume')
+    PMTG_METH = models.TextField(verbose_name='Method(s) Used to Determine Derived Soil Parameters')
+    PMTG_CRED = models.CharField(max_length=255, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, verbose_name='Test Status')
+    PMTG_ENV = models.TextField(verbose_name='Details of Weather and Environmental Conditions During Test')
+    PMTG_REM = models.TextField(verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+    PMTG_NUAR = models.IntegerField(verbose_name='Number of Arms')
+    PMTG_ORNT = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Bearing of Arm 1')
+    PMTG_AXIS = models.CharField(max_length=255, verbose_name='Arm Combination Used for Analysis')
+
+    def __str__(self):
+        return f"{self.LOCA_ID} - Type: {self.PMTG_TYPE} Su: {self.PMTG_CU}"
+
+class PMTD(models.Model):
+    PMTG_TESN = models.OneToOneField(PMTG, on_delete=models.CASCADE, related_name='pressuremeter_test', verbose_name='Test ID')
+
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location Identifier')
+    PMTG_DPTH = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Depth of Test')
+    PMTG_TESN = models.CharField(max_length=255, verbose_name='Test Reference')
+    PMTD_SEQ = models.IntegerField(verbose_name='Sequence Number')
+    PMTD_ARM1 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Axis 1 Displacement')
+    PMTD_ARM2 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Axis 2 Displacement')
+    PMTD_ARM3 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Axis 3 Displacement')
+    PMTD_TPC = models.DecimalField(max_digits=10, decimal_places=1, verbose_name='Total Pressure')
+    PMTD_PPA = models.DecimalField(max_digits=10, decimal_places=1, verbose_name='Pore Pressure Cell A')
+    PMTD_PPB = models.DecimalField(max_digits=10, decimal_places=1, verbose_name='Pore Pressure Cell B')
+    PMTD_VOL = models.DecimalField(max_digits=10, decimal_places=1, verbose_name='Volume Change in Test Cell')
+    PMTD_REM = models.TextField(verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+    PMTD_AX1 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Axis 1 Displacement')
+    PMTD_AX2 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Axis 2 Displacement')
+    PMTD_AX3 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Axis 3 Displacement')
+    PMTD_SA1 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Arm 1 Displacement')
+    PMTD_SA2 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Arm 2 Displacement')
+    PMTD_SA3 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Arm 3 Displacement')
+    PMTD_SA4 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Arm 4 Displacement')
+    PMTD_SA5 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Arm 5 Displacement')
+    PMTD_SA6 = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Arm 6 Displacement')
+    PMTD_SAME = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Mean Arm Displacement')
+
+class PMTL(models.Model):
+    PMTG_TESN = models.OneToOneField(PMTG, on_delete=models.CASCADE, related_name='pressuremeter_loops', verbose_name='Test ID')
+
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
+    PMTG_DPTH = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Depth of Test')
+    PMTL_LNO = models.IntegerField(verbose_name='Unload/Reload Loop Number')
+    PMTL_GAA = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Unload/Reload Shear Modulus Average')
+    PMTL_SINC = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Mean Strain')
+    PMTL_PINC = models.DecimalField(max_digits=10, decimal_places=1, verbose_name='Mean Pressure')
+    PMTL_STRA = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Strain Range or Amplitude')
+    PMTL_PRSA = models.DecimalField(max_digits=10, decimal_places=1, verbose_name='Pressure Range or Amplitude')
+    PMTL_NLSA = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Shear Stress Coefficient')
+    PMTL_NLSB = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Linearity Exponent')
+    PMTL_REM = models.TextField(verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+    PMTL_AXIS = models.CharField(max_length=255, verbose_name='Arm Combination Used for Analysis')
+
 # Look at trying out Django Forms 
 # from django import forms
 # from .models import SAMP
@@ -1405,6 +1496,6 @@ _strength = ['TRIG','TRIT', 'LVAN', 'LHVN', 'TORV', 'LPEN', 'LDYN', 'SHBG','SHBT
 
 _consol = ['CONG','CONS','CODG','CODT'] ✅
 
-_advanced = ['DSSG','DSST','IRSG', 'IRST', 'IRSV', 'RESG','REST','RESV','RESD']
+_advanced = ['DSSG', 'DSST', 'IRSG', 'IRST', 'IRSV', 'RESG', 'REST', 'RESV','RESD']
 
 _rock = ['RPLT', 'RUCS', 'RCAG', 'RCAT', 'RDEN', 'RWCO', 'RTEN', 'RCCV']✅ '''
