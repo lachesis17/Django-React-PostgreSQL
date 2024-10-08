@@ -12,7 +12,7 @@ class CptData(models.Model):
 '''==================================== PROJECT ===================================='''
 
 class PROJ(models.Model):
-    PROJ_ID = models.CharField(max_length=50, primary_key=True, verbose_name='Project Identifier')
+    PROJ_ID = models.CharField(primary_key=True, max_length=50, verbose_name='Project Identifier')
     PROJ_NAME = models.CharField(max_length=255, verbose_name='Name')
     PROJ_LOC = models.CharField(max_length=255, verbose_name='Location')
     PROJ_CLNT = models.CharField(max_length=255, blank=True, verbose_name='Client')
@@ -27,9 +27,9 @@ class PROJ(models.Model):
 '''==================================== LOCATION ===================================='''
     
 class LOCA(models.Model):
-    PROJ_ID = models.ForeignKey(PROJ, on_delete=models.CASCADE, related_name='locations',verbose_name='Project Identifier')
+    PROJ_ID = models.ForeignKey(PROJ, on_delete=models.CASCADE, related_name='locations',verbose_name='Project ID')
 
-    LOCA_ID = models.CharField(max_length=50, primary_key=True, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(primary_key=True, max_length=50, verbose_name='Location')
     LOCA_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Type of Activity')
     LOCA_STAT = models.CharField(max_length=50, blank=True, verbose_name='Status of Information Relating to this Position')
     LOCA_NATE = models.FloatField(null=True, verbose_name='National Grid Easting of Location or Start of Traverse')
@@ -92,7 +92,7 @@ class SAMP(models.Model):
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample')
     SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
-    SAMP_ID = models.CharField(max_length=50, primary_key=True, verbose_name='Sample Unique Identifier')
+    SAMP_ID = models.CharField(primary_key=True, max_length=50, verbose_name='Sample Unique Identifier')
     SAMP_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Sample')
     SAMP_DTIM = models.DateTimeField(blank=True, verbose_name='Date and Time Sample Taken')
     SAMP_UBLO = models.IntegerField(null=True, verbose_name='Number of Blows Required to Drive Sampler')
@@ -133,9 +133,9 @@ class SAMP(models.Model):
 '''==================================== GEOLOGY ===================================='''
 
 class GEOL(models.Model):
-    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='geology_descriptions', verbose_name='Location Identifier')
+    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='geology_descriptions', verbose_name='Location')
 
-    GEOL_TOP = models.FloatField(verbose_name='Depth to the Top of Stratum (m)')
+    GEOL_TOP = models.FloatField(primary_key=True, verbose_name='Depth to the Top of Stratum (m)')
     GEOL_BASE = models.FloatField(verbose_name='Depth to the Base of Description (m)')
     GEOL_DESC = models.TextField(verbose_name='General Description of Stratum', blank=True)
     GEOL_LEG = models.CharField(max_length=50, verbose_name='Legend Code (Soil Type)')
@@ -154,9 +154,9 @@ class GEOL(models.Model):
         return f"Loca: {self.LOCA_ID} Top: {self.GEOL_TOP} Bot: {self.GEOL_BASE} Soil Type: {self.GEOL_LEG}"
     
 class DREM(models.Model):
-    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='depth_remarks', verbose_name='Location Identifier')
+    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='depth_remarks', verbose_name='Location')
 
-    DREM_TOP = models.FloatField(verbose_name='Depth to the Top of Stratum (m)')
+    DREM_TOP = models.FloatField(primary_key=True, verbose_name='Depth to the Top of Stratum (m)')
     DREM_BASE = models.FloatField(verbose_name='Depth to the Base of Description (m)')
     DREM_REM = models.TextField(verbose_name='Remarks', blank=True)
     FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference', blank=True)
@@ -170,9 +170,9 @@ class DREM(models.Model):
 '''==================================== CPT DATA ===================================='''
 
 class SCPG(models.Model):
-    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='cone_penetration_tests')
+    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='cone_penetration_tests', verbose_name='Location')
 
-    SCPG_TESN = models.CharField(max_length=50, primary_key=True, verbose_name='Test Reference or Push Number')
+    SCPG_TESN = models.CharField(primary_key=True, max_length=50, primary_key=True, verbose_name='Test Reference or Push Number')
     SCPG_DEPTH = models.FloatField(verbose_name='Top Depth of Cone Push')
     SCPG_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Cone Test Type')
     SCPG_REF = models.CharField(max_length=50, blank=True, verbose_name='Cone Reference')
@@ -195,7 +195,7 @@ class SCPG(models.Model):
         return f"{self.SCPG_TESN} - {self.SCPG_DEPTH}m"
 
 class SCPT(models.Model):
-    SCPG_TESN = models.ForeignKey('SCPG', on_delete=models.CASCADE, related_name='cone_id', verbose_name='Test Reference or Push Number')
+    SCPG_TESN = models.ForeignKey('SCPG', on_delete=models.CASCADE, primary_key=True, related_name='cone_id', verbose_name='Test Reference or Push Number')
 
     SCPT_DPTH = models.FloatField(primary_key=True, verbose_name='Depth of Result (m)')
     SCPT_RES = models.FloatField(verbose_name='Cone Resistance (qc) (MPa)')
@@ -235,6 +235,62 @@ class SCPT(models.Model):
     def __str__(self):
         return f"{self.SCPG_TESN} - Depth: {self.SCPT_DPTH}m"
     
+'''==================================== SESIMIC ===================================='''
+
+class SCCG(models.Model):
+    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='seismic_general', verbose_name='Location')
+
+    SCCG_TESN = models.CharField(primary_key=True, max_length=50, verbose_name='Cone ID')
+    SCCG_TYPE = models.CharField(max_length=50, verbose_name='Seismic CPT test type')
+    SCCG_REF = models.CharField(max_length=50, verbose_name='Cone reference')
+    SCCG_HAM = models.CharField(max_length=50, verbose_name='Shear hammer setup')
+    SCCG_SHOF = models.FloatField(verbose_name='Horizontal offset between centre of cone and source')
+    SCCG_SELE = models.FloatField(verbose_name='Source elevation above seabed')
+    SCCG_ZLOC = models.CharField(max_length=50, verbose_name='Location where the zero reading of the cone has been performed for a given push')
+    SCCG_OTOP = models.FloatField(verbose_name='Offset between centre of the top receiver and the cone tip')
+    SCCG_OBOT = models.FloatField(verbose_name='Offset between centre of the bottom receiver and the cone tip')
+    SCCG_REM = models.TextField(verbose_name='Remarks')
+
+class SCCT(models.Model):
+    SCCG_TESN = models.ForeignKey(SCCG, on_delete=models.CASCADE, primary_key=True, related_name='seismic_general', verbose_name='Cone ID')
+
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location identifier')
+    SCCT_GEOP = models.CharField(max_length=50, verbose_name='Selected receiver component')
+    SCCT_HDIR = models.CharField(max_length=50, verbose_name='Selected hammer direction')
+    SCCT_METH = models.CharField(max_length=50, verbose_name='Selected method for interval velocity')
+    SCCT_SWVL = models.FloatField(verbose_name='Final shear wave velocity (Vs final)')
+    SCCT_SWD = models.FloatField(verbose_name='Depth corresponding to shear wave velocity measurement')
+    SCCT_SWC = models.FloatField(verbose_name='Confidence interval of shear wave velocity')
+    SCCT_REM = models.TextField(verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='Associated file reference')
+
+'''==================================== PS LOGGING ===================================='''
+
+class PSLG(models.Model):
+    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='ps_logging_general', verbose_name='Location')
+
+    PSLG_TESN = models.CharField(primary_key=True, max_length=50, blank=True, verbose_name='Test number')
+    PSLG_DIAM = models.FloatField(null=True, verbose_name='Expected hole diameter/bit size')
+    PSLG_CADE = models.FloatField(null=True, verbose_name='Casing shoe depth below seabed')
+    PSLG_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated file reference')
+
+class PSLT(models.Model):
+
+    PSLG_TESN = models.ForeignKey(PSLG, on_delete=models.CASCADE, related_name='ps_logging_test', verbose_name='Location')
+
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
+    PSLT_DPTH = models.FloatField(verbose_name='Logging depth below seabed')
+    PSLT_P = models.FloatField(verbose_name='P-wave velocity')
+    PSLT_S = models.FloatField(verbose_name='S-wave velocity')
+    PSLT_BDEN = models.FloatField(verbose_name='Bulk density from gamma-gamma tool')
+    PSLT_CLPR = models.FloatField(verbose_name='Caliper measurement of equivalent hole diameter')
+    PSLT_NGAM = models.FloatField(verbose_name='Natural gamma')
+    PSLT_PVTC = models.CharField(max_length=50, verbose_name='P-wave trace class')
+    PSLT_SVTC = models.CharField(max_length=50, verbose_name='S-wave trace class')
+    PSLT_REM = models.TextField(verbose_name='Remarks')
+
+
 '''==================================== LAB RESULTS ===================================='''
 
 '''=================================== CLASSIFICATION ===================================='''
@@ -242,7 +298,7 @@ class SCPT(models.Model):
 class LNMC(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='moisture_content', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
     SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
@@ -271,7 +327,7 @@ class LNMC(models.Model):
 class GRAG(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='particle_size_distribution', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
     SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
@@ -299,6 +355,9 @@ class GRAG(models.Model):
     GRAG_PRET = models.CharField(max_length=255, verbose_name='Method of Pre-treatment')
     GRAG_SUFF = models.CharField(max_length=2, verbose_name='Sufficiency of Soil Tested')
     GRAG_EXCL = models.TextField(verbose_name='Exclusion Remark')
+    GRAG_D10 = models.FloatField(null=True, verbose_name='Sieve size at which 10%\ of the material passes through')      # NON-STANDARD
+    GRAG_D50 = models.FloatField(null=True, verbose_name='Sieve size at which 50%\ of the material passes through')      # NON-STANDARD
+    GRAG_D60 = models.FloatField(null=True, verbose_name='Sieve size at which 60%\ of the material passes through')      # NON-STANDARD
 
     def __str__(self):
         return f"{self.SAMP_ID} - {self.GRAG_FINE}% fines"
@@ -306,7 +365,7 @@ class GRAG(models.Model):
 class GRAT(models.Model):
     SAMP_ID = models.ForeignKey(GRAG, on_delete=models.CASCADE, related_name='particle_size_distribution_data', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
     SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
@@ -324,7 +383,7 @@ class GRAT(models.Model):
 class LDEN(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='bulk_density', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
     SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
@@ -353,7 +412,7 @@ class LDEN(models.Model):
 class LLPL(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='atterberg', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
     SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
     SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
@@ -391,7 +450,7 @@ class LLPL(models.Model):
 class LPDN(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='particle_density', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
     SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
     SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
@@ -418,7 +477,7 @@ class LPDN(models.Model):
 class LRES(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='electrical_resistivity', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
     SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
     SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
@@ -456,7 +515,7 @@ class LRES(models.Model):
 class LTCH(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='thermal_conductivity', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
     SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
     SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
@@ -491,7 +550,7 @@ class LTCH(models.Model):
 class RELD(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='minmax', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
     SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
     SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
@@ -519,9 +578,9 @@ class RELD(models.Model):
 from django.db import models
 
 class PTST(models.Model):
-    SAMP_ID = models.ForeignKey('SAMP', on_delete=models.CASCADE, related_name='permeability', verbose_name='Sample ID')
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='permeability', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
     SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
     SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
@@ -568,8 +627,239 @@ class PTST(models.Model):
     PTST_LOSS = models.TextField(blank=True, verbose_name='Equipment Head Loss Corrections Applied to the Measurements')
 
     def __str__(self):
-        return f"{self.SAMP_ID} - K: {self.PTST_K} m/x"
+        return f"{self.SAMP_ID} - K: {self.PTST_K} m/s"
     
+'''==================================== CHEMICAL ===================================='''
+
+class GCHM(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='chemical', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen')
+    GCHM_CODE = models.CharField(max_length=50, verbose_name='Determinand')
+    GCHM_METH = models.CharField(max_length=255, verbose_name='Test Method')
+    GCHM_TYP = models.CharField(max_length=50, verbose_name='Test Type')
+    GCHM_RESL = models.FloatField(verbose_name='Test Result')
+    GCHM_UNIT = models.CharField(max_length=50, verbose_name='Test Result Units')
+    GCHM_NAME = models.CharField(max_length=255, verbose_name='Client/Laboratory Preferred Name of Determinand')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    GCHM_REM = models.TextField(verbose_name='Remarks on Test')
+    GCHM_LAB = models.CharField(max_length=255, verbose_name='Name of Testing Laboratory/Organization')
+    GCHM_CRED = models.CharField(max_length=50, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+    GCHM_RTXT = models.TextField(verbose_name='Reported Result')
+    GCHM_DLM = models.FloatField(verbose_name='Lower Detection Limit')
+    SPEC_BASE = models.FloatField(verbose_name='Depth to Base of Specimen')
+    GCHM_DEV = models.TextField(verbose_name='Deviations from the Test Method')
+    GCHM_SGRP = models.CharField(max_length=50, verbose_name='Sample Delivery or Batch Code')
+    GCHM_LSID = models.CharField(max_length=50, verbose_name='Laboratory Sample ID')
+    GCHM_RDEV = models.TextField(verbose_name='Result Deviation Description')
+    GCHM_RDAT = models.DateTimeField(verbose_name='Sample Receipt Date/Time at Laboratory')
+    GCHM_DTIM = models.DateTimeField(verbose_name='Analysis Date and Time')
+    GCHM_TEST = models.CharField(max_length=255, verbose_name='Test or Suite Name')
+    GCHM_IREF = models.CharField(max_length=50, verbose_name='Instrument Reference or Identifier')
+    GCHM_ITYP = models.CharField(max_length=50, verbose_name='Instrument Type')
+    GCHM_SIZE = models.FloatField(verbose_name='Size of Material Removed Prior to Test')
+    GCHM_PERP = models.FloatField(verbose_name='Percentage of Material Removed')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Test: {self.GCHM_NAME} Code: {self.GCHM_CODE} Result: {self.GCHM_RESL} {self.GCHM_UNIT}"
+    
+from django.db import models
+
+class ERES(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='chemical_environmental', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Laboratory specimen reference or Laboratory ID')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of test specimen')
+    ERES_CODE = models.CharField(max_length=50, blank=True, verbose_name='Chemical code')
+    ERES_METH = models.CharField(max_length=50, blank=True, verbose_name='Test method')
+    ERES_MATX = models.CharField(max_length=50, blank=True, verbose_name='Laboratory test matrix')
+    ERES_RTY = models.CharField(max_length=50, blank=True, verbose_name='Run type (Initial or Reanalysis)')
+    ERES_TESN = models.CharField(max_length=50, blank=True, verbose_name='Test reference')
+    ERES_NAME = models.CharField(max_length=50, blank=True, verbose_name='Chemical name')
+    ERES_TNAM = models.CharField(max_length=50, blank=True, verbose_name='Laboratory analytical test name')
+    ERES_RVAL = models.FloatField(null=True, verbose_name='Result value')
+    ERES_RUNI = models.CharField(max_length=50, blank=True, verbose_name='Result unit')
+    ERES_RTXT = models.CharField(max_length=50, blank=True, verbose_name='Reported result')
+    ERES_RTC = models.CharField(max_length=50, blank=True, verbose_name='Result type')
+    ERES_RRES = models.BooleanField(default=False, verbose_name='Reportable result')
+    ERES_DETF = models.BooleanField(default=False, verbose_name='Detect flag')
+    ERES_ORG = models.BooleanField(default=False, verbose_name='Organic')
+    ERES_IQLF = models.CharField(max_length=50, blank=True, verbose_name='Interpreted qualifiers')
+    ERES_LQLF = models.CharField(max_length=50, blank=True, verbose_name='Laboratory qualifiers')
+    ERES_RDLM = models.FloatField(null=True, verbose_name='Reporting detection limit')
+    ERES_MDL = models.FloatField(null=True, verbose_name='Method detection limit')
+    ERES_QLM = models.FloatField(null=True, verbose_name='Quantification limit')
+    ERES_DUIN = models.CharField(max_length=50, blank=True, verbose_name='Unit of detection / quantification limits')
+    ERES_TIC = models.FloatField(null=True, verbose_name='Tentatively Identified Compound (TIC) probability')
+    ERES_TICT = models.FloatField(null=True, verbose_name='Tentatively Identified Compound (TIC) retention time')
+    ERES_RDAT = models.DateTimeField(null=True, verbose_name='Sample receipt date at laboratory')
+    ERES_SGRP = models.CharField(max_length=50, blank=True, verbose_name='Sample delivery or batch code')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of specimen preparation including time between preparation and testing')
+    SPEC_DESC = models.CharField(max_length=255, blank=True, verbose_name='Specimen description')
+    ERES_DTIM = models.DateTimeField(null=True, verbose_name='Analysis date and time')
+    ERES_TEST = models.CharField(max_length=50, blank=True, verbose_name='Test Name')
+    ERES_TORD = models.CharField(max_length=50, blank=True, verbose_name='Total or dissolved')
+    ERES_LOCN = models.CharField(max_length=50, blank=True, verbose_name='Analysis location')
+    ERES_BAS = models.CharField(max_length=50, blank=True, verbose_name='Basis')
+    ERES_DIL = models.FloatField(null=True, verbose_name='Dilution factor')
+    ERES_LMTH = models.CharField(max_length=50, blank=True, verbose_name='Leachate method')
+    ERES_LDTM = models.DateTimeField(null=True, verbose_name='Leachate preparation date and time')
+    ERES_IRE = models.CharField(max_length=50, blank=True, verbose_name='Instrument Reference No or identifier')
+    ERES_ITP = models.CharField(max_length=50, blank=True, verbose_name='Instrument type')
+    ERES_SIZE = models.FloatField(null=True, verbose_name='Size of material removed prior to test')
+    ERES_PER = models.FloatField(null=True, verbose_name='Percentage of material removed')
+    ERES_REM = models.TextField(blank=True, verbose_name='Remarks')
+    ERES_LAB = models.CharField(max_length=50, blank=True, verbose_name='Name of testing laboratory/Organization')
+    ERES_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting body and reference number')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Test: {self.ERES_NAME} Code: {self.ERES_CODE} Result: {self.ERES_RVAL} {self.ERES_RUNI}"
+    
+'''==================================== CONSOLIDATION ===================================='''
+
+class CONG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='consolidation_general', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of specimen preparation including time between preparation and testing')
+    CONG_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Type of consolidation test')
+    CONG_COND = models.CharField(max_length=50, blank=True, verbose_name='Sample condition')
+    CONG_SDIA = models.FloatField(null=True, verbose_name='Test specimen diameter')
+    CONG_HIGT = models.FloatField(null=True, verbose_name='Test specimen height')
+    CONG_MCI = models.FloatField(null=True, verbose_name='Initial water/moisture content')
+    CONG_MCF = models.FloatField(null=True, verbose_name='Final water/moisture content')
+    CONG_BDEN = models.FloatField(null=True, verbose_name='Initial bulk density')
+    CONG_DDEN = models.FloatField(null=True, verbose_name='Initial dry density')
+    CONG_PDEN = models.FloatField(null=True, verbose_name='Particle density')
+    CONG_SATR = models.FloatField(null=True, verbose_name='Initial degree of saturation')
+    CONG_SPRS = models.FloatField(null=True, verbose_name='Swelling pressure')
+    CONG_SATH = models.FloatField(null=True, verbose_name='Height change of specimen on saturation or flooding')
+    CONG_IVR = models.FloatField(null=True, verbose_name='Initial voids ratio')
+    CONG_REM = models.TextField(blank=True, verbose_name='Remarks')
+    CONG_METH = models.CharField(max_length=50, blank=True, verbose_name='Test method')
+    CONG_LAB = models.CharField(max_length=50, blank=True, verbose_name='Name of testing laboratory/organization')
+    CONG_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting body and reference number')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to base of specimen')
+    CONG_DEV = models.TextField(blank=True, verbose_name='Deviations from the test method')
+    CONG_MCIS = models.CharField(max_length=50, blank=True, verbose_name='Initial water/moisture content source')
+    CONG_CORR = models.BooleanField(default=False, verbose_name='Results corrected for equipment deformation')
+    CONG_EVES = models.FloatField(null=True, verbose_name='Effective Overburden')           # NON-STANDARD
+    CONG_OCR = models.FloatField(null=True, verbose_name='Overconsolidation Ratio')         # NON-STANDARD
+    CONG_RPCP = models.FloatField(null=True, verbose_name='Pre-consolidation Pressure ')    # NON-STANDARD
+    CONG_RCOR = models.FloatField(null=True, verbose_name='Compression Index')              # NON-STANDARD
+    CONG_IID = models.FloatField(null=True, verbose_name='Re-compression Index')            # NON-STANDARD
+    CONG_CSQ = models.FloatField(null=True, verbose_name='Sample Quality')                  # NON-STANDARD
+    CONG_RSWP = models.FloatField(null=True, verbose_name='Swelling Pressure')              # NON-STANDARD
+    CONG_SWLL = models.FloatField(null=True, verbose_name='Swell Index')                    # NON-STANDARD
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.CONG_TYPE} Cond: {self.CONG_COND} Lab: {self.CONG_LAB} OCR: {self.CONG_OCR} Quality: {self.CONG_CSQ}"
+    
+class CONS(models.Model):
+    SAMP_ID = models.ForeignKey(CONG, on_delete=models.CASCADE, related_name='consolidation_test', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of specimen')
+    CONS_INCN = models.IntegerField(blank=True, verbose_name='Oedometer stress increment')
+    CONS_IVR = models.FloatField(null=True, verbose_name='Voids ratio at start of increment')
+    CONS_INCF = models.FloatField(null=True, verbose_name='Stress at end of stress increment/decrement')
+    CONS_INCE = models.FloatField(null=True, verbose_name='Voids ratio at end of stress increment')
+    CONS_INMV = models.FloatField(null=True, verbose_name='Reported coefficient of volume compressibility over stress increment')
+    CONS_INSC = models.FloatField(null=True, verbose_name='Coefficient of secondary compression over stress increment')
+    CONS_CVRT = models.FloatField(null=True, verbose_name='Coefficient of consolidation over stress increment determined by the root time method')
+    CONS_CVLG = models.FloatField(null=True, verbose_name='Coefficient of consolidation over stress increment determined by the log time method')
+    CONS_TEMP = models.FloatField(null=True, verbose_name='Average temperature over stress increment')
+    CONS_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Pressure: {self.CONS_INCN} Void Initial: {self.CONS_IVR}"
+
+'''==================================== STRENGTH ===================================='''
+
+class TRIG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='uu_general', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of specimen preparation')
+    TRIG_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Test type')
+    TRIG_COND = models.CharField(max_length=50, blank=True, verbose_name='Sample condition')
+    TRIG_REM = models.TextField(blank=True, verbose_name='Remarks on test')
+    TRIG_METH = models.CharField(max_length=50, blank=True, verbose_name='Test method')
+    TRIG_LAB = models.CharField(max_length=255, blank=True, verbose_name='Testing laboratory/organization')
+    TRIG_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting body and reference number')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to base of specimen')
+    TRIG_DEV = models.TextField(blank=True, verbose_name='Deviation from the procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.TRIG_TYPE} Cond: {self.TRIG_COND} Lab: {self.TRIG_LAB}"
+
+class TRIT(models.Model):
+    SAMP_ID = models.ForeignKey(TRIG, on_delete=models.CASCADE, related_name='uu_test', verbose_name='Sample ID')
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of test specimen')
+    TRIT_TESN = models.CharField(max_length=50, blank=True, verbose_name='Triaxial test/stage reference')
+    TRIT_SDIA = models.FloatField(null=True, verbose_name='Specimen diameter')
+    TRIT_SLEN = models.FloatField(null=True, verbose_name='Specimen length')
+    TRIT_IMC = models.FloatField(null=True, verbose_name='Initial water/moisture content')
+    TRIT_FMC = models.FloatField(null=True, verbose_name='Final water/moisture content')
+    TRIT_CELL = models.FloatField(null=True, verbose_name='Total cell pressure')
+    TRIT_DEVF = models.FloatField(null=True, verbose_name='Corrected deviator stress at failure')
+    TRIT_BDEN = models.FloatField(null=True, verbose_name='Initial bulk density')
+    TRIT_DDEN = models.FloatField(null=True, verbose_name='Initial dry density')
+    TRIT_STRN = models.FloatField(null=True, verbose_name='Axial strain at failure')
+    TRIT_CU = models.FloatField(null=True, verbose_name='Undrained Shear Strength at failure')
+    TRIT_MODE = models.CharField(max_length=50, blank=True, verbose_name='Mode of failure')
+    TRIT_REM = models.TextField(blank=True, verbose_name='Comments')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated file reference')
+    TRIT_FZWC = models.FloatField(null=True, verbose_name='Failure zone water content, if measured')
+    TRIT_RATE = models.FloatField(null=True, verbose_name='Mean rate of shear')
+    TRIT_TYPE = models.TextField(blank=True, verbose_name='Test type')          # NON-STANDARD
+    TRIT_COND = models.TextField(blank=True, verbose_name='Sample condition')   # NON-STANDARD
+    TRIT_SENS = models.FloatField(null=True, verbose_name='Sensitivity')        # NON-STANDARD
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.TRIT_TYPE} Cond: {self.TRIT_COND} Su: {self.TRIT_CU} Max Dev: {self.TRIT_DEVF}"
+
+
 # Look at trying out Django Forms 
 # from django import forms
 # from .models import SAMP
@@ -584,3 +874,15 @@ class PTST(models.Model):
 #             'SAMP_TYPE': forms.TextInput(attrs={'required': 'required'}),
 #             'SAMP_ID': forms.TextInput(attrs={'required': 'required'}),
 #         }
+
+'''_class = ['LNMC','LDEN','GRAG','GRAT','LLPL', 'LPDN', 'LRES', 'LTCH', 'RELD', 'PTST']
+
+_chem = ['GCHM','ERES']
+
+_strength = ['TRIG','TRIT', 'LVAN', 'LHVN', 'TORV', 'LPEN', 'LDYN', 'SHBG','SHBT','TREG', 'TRET', 'TXTG', 'TXTT']
+
+_consol = ['CONG','CONS','CODG','CODT']
+
+_advanced = ['DSSG','DSST','IRSG', 'IRST', 'IRSV', 'RESG','REST','RESV','RESD']
+
+_rock = ['RPLT', 'RCAG', 'RDEN', 'RUCS', 'RWCO']'''
