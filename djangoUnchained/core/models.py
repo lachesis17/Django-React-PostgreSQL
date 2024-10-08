@@ -172,7 +172,7 @@ class DREM(models.Model):
 class SCPG(models.Model):
     LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='cone_penetration_tests', verbose_name='Location')
 
-    SCPG_TESN = models.CharField(primary_key=True, max_length=50, primary_key=True, verbose_name='Test Reference or Push Number')
+    SCPG_TESN = models.CharField(primary_key=True, max_length=50, verbose_name='Test Reference or Push Number')
     SCPG_DEPTH = models.FloatField(verbose_name='Top Depth of Cone Push')
     SCPG_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Cone Test Type')
     SCPG_REF = models.CharField(max_length=50, blank=True, verbose_name='Cone Reference')
@@ -195,7 +195,7 @@ class SCPG(models.Model):
         return f"{self.SCPG_TESN} - {self.SCPG_DEPTH}m"
 
 class SCPT(models.Model):
-    SCPG_TESN = models.ForeignKey('SCPG', on_delete=models.CASCADE, primary_key=True, related_name='cone_id', verbose_name='Test Reference or Push Number')
+    SCPG_TESN = models.OneToOneField('SCPG', on_delete=models.CASCADE, related_name='cone_id', verbose_name='Test Reference or Push Number')
 
     SCPT_DPTH = models.FloatField(primary_key=True, verbose_name='Depth of Result (m)')
     SCPT_RES = models.FloatField(verbose_name='Cone Resistance (qc) (MPa)')
@@ -252,7 +252,7 @@ class SCCG(models.Model):
     SCCG_REM = models.TextField(verbose_name='Remarks')
 
 class SCCT(models.Model):
-    SCCG_TESN = models.ForeignKey(SCCG, on_delete=models.CASCADE, primary_key=True, related_name='seismic_general', verbose_name='Cone ID')
+    SCCG_TESN = models.OneToOneField(SCCG, on_delete=models.CASCADE, related_name='seismic_general', verbose_name='Cone ID')
 
     LOCA_ID = models.CharField(max_length=50, verbose_name='Location identifier')
     SCCT_GEOP = models.CharField(max_length=50, verbose_name='Selected receiver component')
@@ -276,8 +276,7 @@ class PSLG(models.Model):
     FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated file reference')
 
 class PSLT(models.Model):
-
-    PSLG_TESN = models.ForeignKey(PSLG, on_delete=models.CASCADE, related_name='ps_logging_test', verbose_name='Location')
+    PSLG_TESN = models.OneToOneField(PSLG, on_delete=models.CASCADE, related_name='ps_logging_test', verbose_name='Location')
 
     LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
     PSLT_DPTH = models.FloatField(verbose_name='Logging depth below seabed')
