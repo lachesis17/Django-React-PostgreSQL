@@ -170,7 +170,7 @@ class DREM(models.Model):
 '''==================================== CPT DATA ===================================='''
 
 class SCPG(models.Model):
-    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='cone_penetration_tests', verbose_name='Location')
+    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='cpt_general', verbose_name='Location')
 
     SCPG_TESN = models.CharField(primary_key=True, max_length=50, verbose_name='Test Reference or Push Number')
     SCPG_DEPTH = models.FloatField(verbose_name='Top Depth of Cone Push')
@@ -195,7 +195,7 @@ class SCPG(models.Model):
         return f"{self.SCPG_TESN} - {self.SCPG_DEPTH}m"
 
 class SCPT(models.Model):
-    SCPG_TESN = models.OneToOneField('SCPG', on_delete=models.CASCADE, related_name='cone_id', verbose_name='Test Reference or Push Number')
+    SCPG_TESN = models.OneToOneField('SCPG', on_delete=models.CASCADE, related_name='cpt_test', verbose_name='Cone ID')
 
     SCPT_DPTH = models.FloatField(primary_key=True, verbose_name='Depth of Result (m)')
     SCPT_RES = models.FloatField(verbose_name='Cone Resistance (qc) (MPa)')
@@ -252,9 +252,9 @@ class SCCG(models.Model):
     SCCG_REM = models.TextField(verbose_name='Remarks')
 
 class SCCT(models.Model):
-    SCCG_TESN = models.OneToOneField(SCCG, on_delete=models.CASCADE, related_name='seismic_general', verbose_name='Cone ID')
+    SCCG_TESN = models.OneToOneField(SCCG, on_delete=models.CASCADE, related_name='seismic_test', verbose_name='Cone ID')
 
-    LOCA_ID = models.CharField(max_length=50, verbose_name='Location identifier')
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
     SCCT_GEOP = models.CharField(max_length=50, verbose_name='Selected receiver component')
     SCCT_HDIR = models.CharField(max_length=50, verbose_name='Selected hammer direction')
     SCCT_METH = models.CharField(max_length=50, verbose_name='Selected method for interval velocity')
@@ -262,7 +262,7 @@ class SCCT(models.Model):
     SCCT_SWD = models.FloatField(verbose_name='Depth corresponding to shear wave velocity measurement')
     SCCT_SWC = models.FloatField(verbose_name='Confidence interval of shear wave velocity')
     SCCT_REM = models.TextField(verbose_name='Remarks')
-    FILE_FSET = models.CharField(max_length=255, verbose_name='Associated file reference')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File reference')
 
 '''==================================== PS LOGGING ===================================='''
 
@@ -273,7 +273,7 @@ class PSLG(models.Model):
     PSLG_DIAM = models.FloatField(null=True, verbose_name='Expected hole diameter/bit size')
     PSLG_CADE = models.FloatField(null=True, verbose_name='Casing shoe depth below seabed')
     PSLG_REM = models.TextField(blank=True, verbose_name='Remarks')
-    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated file reference')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
 
 class PSLT(models.Model):
     PSLG_TESN = models.OneToOneField(PSLG, on_delete=models.CASCADE, related_name='ps_logging_test', verbose_name='Location')
@@ -293,6 +293,8 @@ class PSLT(models.Model):
 '''==================================== LAB RESULTS ===================================='''
 
 '''=================================== CLASSIFICATION ===================================='''
+
+'''==================================== MOISTURE ===================================='''
 
 class LNMC(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='moisture_content', verbose_name='Sample ID')
@@ -322,62 +324,8 @@ class LNMC(models.Model):
 
     def __str__(self):
         return f"{self.SAMP_ID} - {self.LNMC_MC}% Moisture Content"
-
-class GRAG(models.Model):
-    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='particle_size_distribution', verbose_name='Sample ID')
-
-    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
-    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
-    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
-    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
-    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
-    SPEC_DEPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen (m)')
-    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
-    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
-    GRAG_UC = models.FloatField(verbose_name='Uniformity Coefficient (D60/D10)')
-    GRAG_CC = models.FloatField(verbose_name='Coefficient of Curvature')
-    GRAG_VCRE = models.FloatField(verbose_name='Percentage of Material Tested Greater than 63mm (%)')
-    GRAG_GRAV = models.FloatField(verbose_name='Percentage of Material Tested in Range 63mm to 2mm (%)')
-    GRAG_SAND = models.FloatField(verbose_name='Percentage of Material Tested in Range 2mm to 63um (%)')
-    GRAG_SILT = models.FloatField(verbose_name='Percentage of Material Tested in Range 63um to 2um (%)')
-    GRAG_CLAY = models.FloatField(verbose_name='Percentage of Material Tested Less than 2um (%)')
-    GRAG_FINE = models.FloatField(verbose_name='Percentage Less than 63um (%)')
-    GRAG_REM = models.TextField(verbose_name='Remarks')
-    GRAG_METH = models.CharField(max_length=100, verbose_name='Test Method')
-    GRAG_LAB = models.CharField(max_length=100, verbose_name='Name of Testing Laboratory/Organization')
-    GRAG_CRED = models.CharField(max_length=50, verbose_name='Accrediting Body and Reference Number')
-    TEST_STAT = models.CharField(max_length=50, verbose_name='Test Status')
-    FILE_FSET = models.CharField(max_length=255, verbose_name='Associated File Reference')
-    SPEC_BASE = models.FloatField(verbose_name='Depth to Base of Specimen (m)')
-    GRAG_DEV = models.TextField(verbose_name='Deviation from the Specified Test Procedure')
-    GRAG_PDEN = models.FloatField(verbose_name='Particle Density (Mg/m3)')
-    GRAG_PRET = models.CharField(max_length=255, verbose_name='Method of Pre-treatment')
-    GRAG_SUFF = models.CharField(max_length=2, verbose_name='Sufficiency of Soil Tested')
-    GRAG_EXCL = models.TextField(verbose_name='Exclusion Remark')
-    GRAG_D10 = models.FloatField(null=True, verbose_name='Sieve size at which 10%\ of the material passes through')      # NON-STANDARD
-    GRAG_D50 = models.FloatField(null=True, verbose_name='Sieve size at which 50%\ of the material passes through')      # NON-STANDARD
-    GRAG_D60 = models.FloatField(null=True, verbose_name='Sieve size at which 60%\ of the material passes through')      # NON-STANDARD
-
-    def __str__(self):
-        return f"{self.SAMP_ID} - {self.GRAG_FINE}% fines"
     
-class GRAT(models.Model):
-    SAMP_ID = models.ForeignKey(GRAG, on_delete=models.CASCADE, related_name='particle_size_distribution_data', verbose_name='Sample ID')
-
-    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
-    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
-    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
-    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
-    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
-    SPEC_DPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen (m)', help_text="m")
-    GRAT_SIZE = models.FloatField(verbose_name='Sieve or Particle Size (mm)', help_text="mm")
-    GRAT_PERP = models.FloatField(verbose_name='Percentage Passing/Finer than GRAT_SIZE (%)', help_text="%")
-    GRAT_TYPE = models.CharField(max_length=50, verbose_name='Test Type')
-    GRAT_REM = models.TextField(verbose_name='Remarks')
-    FILE_FSET = models.CharField(max_length=255, verbose_name='Associated File Reference')
-    
-    def __str__(self):
-        return f"{self.SAMP_ID} - {self.GRAT_SIZE} mm - {self.GRAT_PERP} passing (%)"
+'''==================================== DENSITY ===================================='''
     
 class LDEN(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='bulk_density', verbose_name='Sample ID')
@@ -407,6 +355,66 @@ class LDEN(models.Model):
 
     def __str__(self):
         return f"{self.SAMP_ID} - BDEN: {self.LDEN_BDEN} DDEN: {self.LDEN_DDEN}"
+    
+'''==================================== PSD ===================================='''
+
+class GRAG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='particle_size_distribution', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
+    SPEC_DEPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen (m)')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    GRAG_UC = models.FloatField(verbose_name='Uniformity Coefficient (D60/D10)')
+    GRAG_CC = models.FloatField(verbose_name='Coefficient of Curvature')
+    GRAG_VCRE = models.FloatField(verbose_name='Percentage of Material Tested Greater than 63mm (%)')
+    GRAG_GRAV = models.FloatField(verbose_name='Percentage of Material Tested in Range 63mm to 2mm (%)')
+    GRAG_SAND = models.FloatField(verbose_name='Percentage of Material Tested in Range 2mm to 63um (%)')
+    GRAG_SILT = models.FloatField(verbose_name='Percentage of Material Tested in Range 63um to 2um (%)')
+    GRAG_CLAY = models.FloatField(verbose_name='Percentage of Material Tested Less than 2um (%)')
+    GRAG_FINE = models.FloatField(verbose_name='Percentage Less than 63um (%)')
+    GRAG_REM = models.TextField(verbose_name='Remarks')
+    GRAG_METH = models.CharField(max_length=100, verbose_name='Test Method')
+    GRAG_LAB = models.CharField(max_length=100, verbose_name='Name of Testing Laboratory/Organization')
+    GRAG_CRED = models.CharField(max_length=50, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File reference')
+    SPEC_BASE = models.FloatField(verbose_name='Depth to Base of Specimen (m)')
+    GRAG_DEV = models.TextField(verbose_name='Deviation from the Specified Test Procedure')
+    GRAG_PDEN = models.FloatField(verbose_name='Particle Density (Mg/m3)')
+    GRAG_PRET = models.CharField(max_length=255, verbose_name='Method of Pre-treatment')
+    GRAG_SUFF = models.CharField(max_length=2, verbose_name='Sufficiency of Soil Tested')
+    GRAG_EXCL = models.TextField(verbose_name='Exclusion Remark')
+    GRAG_D10 = models.FloatField(null=True, verbose_name='Sieve size at which 10%\ of the material passes through')      # NON-STANDARD
+    GRAG_D50 = models.FloatField(null=True, verbose_name='Sieve size at which 50%\ of the material passes through')      # NON-STANDARD
+    GRAG_D60 = models.FloatField(null=True, verbose_name='Sieve size at which 60%\ of the material passes through')      # NON-STANDARD
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - {self.GRAG_FINE}% fines"
+    
+class GRAT(models.Model):
+    SAMP_ID = models.ForeignKey(GRAG, on_delete=models.CASCADE, related_name='particle_size_distribution_data', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen (m)', help_text="m")
+    GRAT_SIZE = models.FloatField(verbose_name='Sieve or Particle Size (mm)', help_text="mm")
+    GRAT_PERP = models.FloatField(verbose_name='Percentage Passing/Finer than GRAT_SIZE (%)', help_text="%")
+    GRAT_TYPE = models.CharField(max_length=50, verbose_name='Test Type')
+    GRAT_REM = models.TextField(verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File reference')
+    
+    def __str__(self):
+        return f"{self.SAMP_ID} - {self.GRAT_SIZE} mm - {self.GRAT_PERP} passing (%)"
+
+'''==================================== ATTERBERG ===================================='''
 
 class LLPL(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='atterberg', verbose_name='Sample ID')
@@ -446,6 +454,8 @@ class LLPL(models.Model):
     def __str__(self):
         return f"{self.SAMP_ID} - LL: {self.LLPL_LL} PL: {self.LLPL_PL} PI: {self.LLPL_PI}"
 
+'''==================================== PARTICLE DENSITY ===================================='''
+
 class LPDN(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='particle_density', verbose_name='Sample ID')
 
@@ -472,6 +482,8 @@ class LPDN(models.Model):
 
     def __str__(self):
         return f"{self.SAMP_ID} - SG: {self.LPDN_PDEN}"
+    
+'''==================================== ELECTRICAL ===================================='''
     
 class LRES(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='electrical_resistivity', verbose_name='Sample ID')
@@ -510,6 +522,8 @@ class LRES(models.Model):
 
     def __str__(self):
         return f"{self.SAMP_ID} - {self.LRES_LRES} (ohm m)"
+    
+'''==================================== THERMAL ===================================='''
 
 class LTCH(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='thermal_conductivity', verbose_name='Sample ID')
@@ -541,11 +555,13 @@ class LTCH(models.Model):
     LTCH_LAB = models.CharField(max_length=255, blank=True, verbose_name='Testing Laboratory Name')
     LTCH_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body Reference')
     TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
-    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated File Reference')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
 
     def __str__(self):
         return f"{self.SAMP_ID} - Conductivity: {self.LTCH_TCON} (W/(K-m)) Resistivity: {self.LTCH_TRES} (K-m/W)"
     
+'''==================================== MIN/MAX ===================================='''
+
 class RELD(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='minmax', verbose_name='Sample ID')
 
@@ -567,7 +583,7 @@ class RELD(models.Model):
     RELD_LAB = models.CharField(max_length=255, blank=True, verbose_name='Testing Laboratory Name')
     RELD_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body Reference')
     TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
-    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated File Reference')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
     SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
     RELD_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Procedure')
 
@@ -575,6 +591,8 @@ class RELD(models.Model):
         return f"{self.SAMP_ID} - Min: {self.RELD_DMIN} Max: {self.RELD_DMAX}"
     
 from django.db import models
+
+'''==================================== PERMEABILITY ===================================='''
 
 class PTST(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='permeability', verbose_name='Sample ID')
@@ -613,7 +631,7 @@ class PTST(models.Model):
     PTST_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
     PTST_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body and Reference Number')
     TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
-    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated File Reference')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
     SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
     PTST_DEV = models.TextField(blank=True, verbose_name='Deviations from the Test Method')
     PTST_WCIS = models.TextField(blank=True, verbose_name='Initial Water Content Source')
@@ -769,7 +787,7 @@ class CONG(models.Model):
     CONG_RPCP = models.FloatField(null=True, verbose_name='Pre-consolidation Pressure ')    # NON-STANDARD
     CONG_RCOR = models.FloatField(null=True, verbose_name='Compression Index')              # NON-STANDARD
     CONG_IID = models.FloatField(null=True, verbose_name='Re-compression Index')            # NON-STANDARD
-    CONG_CSQ = models.FloatField(null=True, verbose_name='Sample Quality')                  # NON-STANDARD
+    CONG_SQ = models.FloatField(null=True, verbose_name='Sample Quality')                 # NON-STANDARD
     CONG_RSWP = models.FloatField(null=True, verbose_name='Swelling Pressure')              # NON-STANDARD
     CONG_SWLL = models.FloatField(null=True, verbose_name='Swell Index')                    # NON-STANDARD
 
@@ -802,6 +820,8 @@ class CONS(models.Model):
 
 '''==================================== STRENGTH ===================================='''
 
+'''==================================== TRIAXIALS ===================================='''
+
 class TRIG(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='uu_general', verbose_name='Sample ID')
 
@@ -829,6 +849,7 @@ class TRIG(models.Model):
 
 class TRIT(models.Model):
     SAMP_ID = models.ForeignKey(TRIG, on_delete=models.CASCADE, related_name='uu_test', verbose_name='Sample ID')
+
     LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location')
     SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
     SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample reference')
@@ -848,7 +869,7 @@ class TRIT(models.Model):
     TRIT_CU = models.FloatField(null=True, verbose_name='Undrained Shear Strength at failure')
     TRIT_MODE = models.CharField(max_length=50, blank=True, verbose_name='Mode of failure')
     TRIT_REM = models.TextField(blank=True, verbose_name='Comments')
-    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated file reference')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
     TRIT_FZWC = models.FloatField(null=True, verbose_name='Failure zone water content, if measured')
     TRIT_RATE = models.FloatField(null=True, verbose_name='Mean rate of shear')
     TRIT_TYPE = models.TextField(blank=True, verbose_name='Test type')          # NON-STANDARD
@@ -857,6 +878,247 @@ class TRIT(models.Model):
 
     def __str__(self):
         return f"{self.SAMP_ID} - Type: {self.TRIT_TYPE} Cond: {self.TRIT_COND} Su: {self.TRIT_CU} Max Dev: {self.TRIT_DEVF}"
+    
+class TREG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='triaxial_general', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True)
+    SAMP_TOP = models.FloatField(null=True)
+    SAMP_REF = models.CharField(max_length=50, blank=True)
+    SAMP_TYPE = models.CharField(max_length=50, blank=True)
+    SPEC_REF = models.CharField(max_length=50, blank=True)
+    SPEC_DPTH = models.FloatField(null=True)
+    SPEC_DESC = models.TextField(blank=True)
+    SPEC_PREP = models.TextField(blank=True)
+    TREG_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Test Type')
+    TREG_COND = models.CharField(max_length=50, blank=True, verbose_name='Sample Condition')
+    TREG_COH = models.FloatField(null=True, verbose_name='Cohesion (kPa)')
+    TREG_PHI = models.FloatField(null=True, verbose_name='Angle of Friction (°)')
+    TREG_FCR = models.CharField(max_length=50, blank=True, verbose_name='Failure Criterion')
+    TREG_REM = models.TextField(blank=True, verbose_name='Remarks')
+    TREG_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    TREG_LAB = models.CharField(max_length=255, blank=True, verbose_name='Laboratory Name')
+    TREG_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    TREG_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.TREG_TYPE} Cond: {self.TREG_COND} Lab: {self.TREG_LAB} Phi: {self.TREG_PHI}"
+    
+class TRET(models.Model):
+    SAMP_ID = models.ForeignKey(TREG, on_delete=models.CASCADE, related_name='triaxial_test', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to top of test specimen')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    TRET_TESN = models.CharField(max_length=255, verbose_name='Triaxial Test/Stage Number')
+    TRET_SDIA = models.FloatField(verbose_name='Specimen Diameter')
+    TRET_LEN = models.FloatField(verbose_name='Specimen Length')
+    TRET_IMC = models.FloatField(verbose_name='Initial Water/Moisture Content')
+    TRET_FMC = models.FloatField(verbose_name='Final Water/Moisture Content')
+    TRET_BDEN = models.FloatField(verbose_name='Initial Bulk Density')
+    TRET_DDEN = models.FloatField(verbose_name='Initial Dry Density')
+    TRET_SAT = models.CharField(max_length=255, verbose_name='Method of Saturation')
+    TRET_CONS = models.TextField(verbose_name='Details of Consolidation Stage')
+    TRET_CONP = models.FloatField(verbose_name='Effective Stress at End of Consolidation')
+    TRET_CELL = models.FloatField(verbose_name='Total Cell Pressure During Shearing Stage')
+    TRET_PWPI = models.FloatField(verbose_name='Porewater Pressure at Start of Shear Stage')
+    TRET_STRR = models.FloatField(verbose_name='Rate of Axial Strain During Shear')
+    TRET_STRN = models.FloatField(verbose_name='Axial Strain at Failure')
+    TRET_DEVF = models.FloatField(verbose_name='Deviator Stress at Failure')
+    TRET_PWPF = models.FloatField(verbose_name='Porewater Pressure at Failure')
+    TRET_STV = models.FloatField(verbose_name='Volumetric Strain at Failure (Drained Only)')
+    TRET_MODE = models.CharField(max_length=255, verbose_name='Mode of Failure')
+    TRET_REM = models.TextField(verbose_name='Comments')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File reference')
+    TRET_BACK = models.FloatField(verbose_name='Final Back Pressure Applied Prior to Shearing')
+    TRET_VERT = models.FloatField(verbose_name='Vertical Strain at End of Consolidation')
+    TRET_VOLM = models.FloatField(verbose_name='Volumetric Strain at End of Consolidation')
+    TRET_RATE = models.FloatField(verbose_name='Rate of Volumetric Strain Immediately Prior to Shearing')
+    TRET_BVAL = models.FloatField(verbose_name='Final B-Value Prior to Shearing')
+    TRET_DRN = models.CharField(max_length=255, verbose_name='Type of Drainage Conditions During Shear')
+    TRET_MEMB = models.FloatField(verbose_name='Membrane Corrections Applied at Failure')
+    TRET_FILC = models.FloatField(verbose_name='Filter Paper Corrections Applied at Failure')
+    TRET_IVR = models.FloatField(verbose_name='Initial Voids Ratio')
+    TRET_SATR = models.FloatField(verbose_name='Saturation Percentage')
+    TRET_CVP = models.FloatField(verbose_name='Effective Vertical Pressure at End of Consolidation')
+    TRET_CRP = models.FloatField(verbose_name='Effective Radial Pressure at End of Consolidation')
+    TRET_MEAN = models.FloatField(verbose_name='Peak Mean Effective Stress During Shear')
+    TRET_CU = models.FloatField(verbose_name='Undrained Shear Strength at Failure')
+    TRET_EP50 = models.FloatField(verbose_name='Strain at 50% Peak Deviator Stress')
+    TRET_E50 = models.FloatField(verbose_name='Secant Modulus at 50% Peak Deviator Stress')
+    TRET_FVR = models.FloatField(verbose_name='Final Voids Ratio')                              # NON-STANDARD
+    TRET_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Test Type')           # NON-STANDARD
+    TRET_COND = models.CharField(max_length=50, blank=True, verbose_name='Sample Condition')    # NON-STANDARD
+    TRET_EP50 = models.FloatField(verbose_name='Epsilon 50 (%)')                                # NON-STANDARD
+    TRET_K0 = models.FloatField(verbose_name='Calculated K0')                                   # NON-STANDARD
+    TRET_EXPP = models.FloatField(verbose_name='Excess Pore Pressure')                          # NON-STANDARD
+    TRET_MAJOR = models.FloatField(verbose_name='Major Principal Stress At Failure ')           # NON-STANDARD
+    TRET_MINOR = models.FloatField(verbose_name='Minor Principal Stress At Failure ')           # NON-STANDARD
+    TRET_SQ = models.FloatField(verbose_name='Sample Quality')                                  # NON-STANDARD
+    TRET_QNET = models.FloatField(verbose_name='Qnet Correlation')                              # NON-STANDARD
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.TRET_TYPE} Cond: {self.TRET_COND} Su: {self.TRET_CU} Max Dev: {self.TRET_DEVF}"
+    
+'''==================================== OFFSHORE STRENGTH ====================================''' 
+
+class LPEN(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='hand_pen', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location', blank=True)
+    SAMP_TOP = models.FloatField(verbose_name='Depth to top of sample', null=True)
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample reference', blank=True)
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample type', blank=True)
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen reference', blank=True)
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to top of specimen', null=True)
+    SPEC_DESC = models.TextField(verbose_name='Specimen description', blank=True)
+    SPEC_PREP = models.TextField(verbose_name='Details of specimen preparation', blank=True)
+    LPEN_PPEN = models.FloatField(verbose_name='Hand penetrometer undrained shear strength', null=True)
+    LPEN_MC = models.FloatField(verbose_name='Water/moisture content local to test', null=True)
+    LPEN_REM = models.TextField(verbose_name='Remarks', blank=True)
+    LPEN_METH = models.CharField(max_length=255, verbose_name='Test method', blank=True)
+    LPEN_LAB = models.CharField(max_length=255, verbose_name='Name of testing laboratory/organization', blank=True)
+    LPEN_CRED = models.CharField(max_length=255, verbose_name='Accrediting body and reference number', blank=True)
+    TEST_STAT = models.CharField(max_length=50, verbose_name='Test status', blank=True)
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File reference', blank=True)
+    SPEC_BASE = models.FloatField(verbose_name='Depth to base of specimen', null=True)
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Su: {self.LPEN_PPEN} kPa"
+    
+class LVAN(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='lab_vane', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location', blank=True)
+    SAMP_TOP = models.FloatField(verbose_name='Depth to top of sample', null=True)
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample reference', blank=True)
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample type', blank=True)
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen reference', blank=True)
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to top of specimen', null=True)
+    SPEC_DESC = models.TextField(verbose_name='Specimen description', blank=True)
+    SPEC_PREP = models.TextField(verbose_name='Details of specimen preparation', blank=True)
+    LVAN_VNPK = models.FloatField(verbose_name='Vane undrained shear strength (peak)', null=True)
+    LVAN_VNRM = models.FloatField(verbose_name='Vane undrained shear strength (remoulded)', null=True)
+    LVAN_MC = models.FloatField(verbose_name='Water/moisture content local to the test', null=True)
+    LVAN_SIZE = models.FloatField(verbose_name='Equivalent diameter of vane', null=True)
+    LVAN_VLEN = models.FloatField(verbose_name='Length of vane', null=True)
+    LVAN_REM = models.TextField(verbose_name='Remarks', blank=True)
+    LVAN_METH = models.CharField(max_length=255, verbose_name='Test method', blank=True)
+    LVAN_LAB = models.CharField(max_length=255, verbose_name='Name of testing laboratory/organization', blank=True)
+    LVAN_CRED = models.CharField(max_length=255, verbose_name='Accrediting body and reference number', blank=True)
+    TEST_STAT = models.CharField(max_length=50, verbose_name='Test status', blank=True)
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File reference', blank=True)
+    SPEC_BASE = models.FloatField(verbose_name='Depth to base of specimen', null=True)
+    LVAN_DEV = models.TextField(verbose_name='Deviation from the specified procedure', blank=True)
+    LVAN_TYPE = models.CharField(max_length=50, verbose_name='Vane type', blank=True)       # USE THIS TO REMOVE TORV GROUP
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.LVAN_TYPE} Su: {self.LVAN_VNPK} Size: {self.LVAN_SIZE} Lab: {self.LVAN_LAB}"
+    
+'''==================================== BENDER ===================================='''
+    
+class LDYN(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='bender', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True)
+    SAMP_TOP = models.FloatField(null=True)
+    SAMP_REF = models.CharField(max_length=50, blank=True)
+    SAMP_TYPE = models.CharField(max_length=50, blank=True)
+    SPEC_REF = models.CharField(max_length=50, blank=True)
+    SPEC_DPTH = models.FloatField(null=True)
+    SPEC_DESC = models.TextField(blank=True)
+    SPEC_PREP = models.TextField(blank=True)
+    LDYN_PWAV = models.FloatField(null=True, verbose_name='P-wave velocity (m/s)')
+    LDYN_SWAV = models.FloatField(null=True, verbose_name='S-wave velocity (m/s)')
+    LDYN_EMOD = models.FloatField(null=True, verbose_name='Dynamic elastic modulus (GPa)')
+    LDYN_SG = models.FloatField(null=True, verbose_name='Shear modulus (GPa)')
+    LDYN_REM = models.TextField(blank=True, verbose_name='Remarks')
+    LDYN_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    LDYN_LAB = models.CharField(max_length=255, blank=True, verbose_name='Laboratory Name')
+    LDYN_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    LDYN_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - SWAV: {self.LDYN_SWAV} SG: {self.LDYN_SG} Lab: {self.LDYN_LAB}"
+    
+'''==================================== SHEARBOX ===================================='''
+
+class SHBG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='shearbox_general', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to top of test specimen')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    SHBG_TYPE = models.CharField(max_length=255, verbose_name='Test Type')
+    SHBG_COND = models.CharField(max_length=255, verbose_name='Sample Condition')
+    SHBG_CONS = models.TextField(verbose_name='Specific Condition Statements')
+    SHBG_PCOH = models.FloatField(verbose_name='Peak Cohesion Intercept')
+    SHBG_PHI = models.FloatField(verbose_name='Peak Angle of Friction')
+    SHBG_RCOH = models.FloatField(verbose_name='Residual Cohesion Intercept')
+    SHBG_RPHI = models.FloatField(verbose_name='Residual Angle of Friction')
+    SHBG_ENCA = models.TextField(verbose_name='Method of Encapsulation of Specimens Tested')
+    SHBG_REM = models.TextField(verbose_name='Remarks')
+    SHBG_METH = models.CharField(max_length=255, verbose_name='Test Method')
+    SHBG_LAB = models.CharField(max_length=255, verbose_name='Name of Testing Laboratory/Organization')
+    SHBG_CRED = models.CharField(max_length=255, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File reference')
+    SPEC_BASE = models.FloatField(verbose_name='Depth to Base of Specimen')
+    SHBG_DEV = models.TextField(verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.SHBG_TYPE} Cond: {self.SHBG_COND} Lab: {self.SHBG_LAB} Phi: {self.SHBG_PHI}"
+    
+class SHBT(models.Model):
+    SAMP_ID = models.ForeignKey(SHBG, on_delete=models.CASCADE, related_name='shearbox_test', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen')
+    SHBT_TESN = models.CharField(max_length=255, verbose_name='Shear Box Test Stage/Specimen Reference')
+    SHBT_BDEN = models.FloatField(verbose_name='Initial Bulk Density')
+    SHBT_DDEN = models.FloatField(verbose_name='Initial Dry Density')
+    SHBT_NORM = models.FloatField(verbose_name='Normal Stress Applied')
+    SHBT_DISP = models.FloatField(verbose_name='Displacement Rate for Peak Stress Stage')
+    SHBT_DISR = models.FloatField(verbose_name='Displacement Rate for Residual Stress Stage')
+    SHBT_REVS = models.IntegerField(verbose_name='Number of Traverses if Residual Test')
+    SHBT_PEAK = models.FloatField(verbose_name='Peak Shear Stress')
+    SHBT_RES = models.FloatField(verbose_name='Residual Shear Stress')
+    SHBT_PDIS = models.FloatField(verbose_name='Horizontal Displacement at Peak')
+    SHBT_RDIS = models.FloatField(verbose_name='Horizontal Displacement at Residual')
+    SHBT_PDIN = models.FloatField(verbose_name='Vertical Displacement at Peak Shear Stress')
+    SHBT_RDIN = models.FloatField(verbose_name='Vertical Displacement at Residual Shear Stress')
+    SHBT_PDEN = models.FloatField(verbose_name='Particle Density')
+    SHBT_IVR = models.FloatField(verbose_name='Initial Voids Ratio')
+    SHBT_MCI = models.FloatField(verbose_name='Initial Water/Moisture Content')
+    SHBT_MCF = models.FloatField(verbose_name='Final Water/Moisture Content')
+    SHBT_DIA1 = models.FloatField(verbose_name='Specimen Diameter in Direction of Shear (Rock Joints)')
+    SHBT_DIA2 = models.FloatField(verbose_name='Specimen Diameter Perpendicular to Shear (Rock Joints)')
+    SHBT_HGT = models.FloatField(verbose_name='Specimen Height')
+    SHBT_CRIT = models.TextField(verbose_name='Failure/Residual Strength Criterion Used')
+    SHBT_REM = models.TextField(verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File reference')
+    SHBT_PVST = models.FloatField(verbose_name='Normal (Vertical) Stress at Peak')
+    SHBT_RVST = models.FloatField(verbose_name='Normal (Vertical) Stress at Residual')
 
 
 # Look at trying out Django Forms 
@@ -874,13 +1136,13 @@ class TRIT(models.Model):
 #             'SAMP_ID': forms.TextInput(attrs={'required': 'required'}),
 #         }
 
-'''_class = ['LNMC','LDEN','GRAG','GRAT','LLPL', 'LPDN', 'LRES', 'LTCH', 'RELD', 'PTST']
+'''_class = ['LNMC','LDEN','GRAG','GRAT','LLPL', 'LPDN', 'LRES', 'LTCH', 'RELD', 'PTST'] ✅
 
-_chem = ['GCHM','ERES']
+_chem = ['GCHM','ERES'] ✅
 
-_strength = ['TRIG','TRIT', 'LVAN', 'LHVN', 'TORV', 'LPEN', 'LDYN', 'SHBG','SHBT','TREG', 'TRET', 'TXTG', 'TXTT']
+_strength = ['TRIG','TRIT', 'LVAN', 'LHVN', 'TORV', 'LPEN', 'LDYN', 'SHBG','SHBT', 'TREG', 'TRET', 'TXTG', 'TXTT'] ✅
 
-_consol = ['CONG','CONS','CODG','CODT']
+_consol = ['CONG','CONS','CODG','CODT'] ✅
 
 _advanced = ['DSSG','DSST','IRSG', 'IRST', 'IRSV', 'RESG','REST','RESV','RESD']
 
