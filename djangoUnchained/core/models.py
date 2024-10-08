@@ -237,8 +237,11 @@ class SCPT(models.Model):
     
 '''==================================== LAB RESULTS ===================================='''
 
+'''=================================== CLASSIFICATION ===================================='''
+
 class LNMC(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='moisture_content', verbose_name='Sample ID')
+
     LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
     SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
@@ -267,6 +270,7 @@ class LNMC(models.Model):
 
 class GRAG(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='particle_size_distribution', verbose_name='Sample ID')
+
     LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
     SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
@@ -301,6 +305,7 @@ class GRAG(models.Model):
     
 class GRAT(models.Model):
     SAMP_ID = models.ForeignKey(GRAG, on_delete=models.CASCADE, related_name='particle_size_distribution_data', verbose_name='Sample ID')
+
     LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
     SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
@@ -315,7 +320,256 @@ class GRAT(models.Model):
     
     def __str__(self):
         return f"{self.SAMP_ID} - {self.GRAT_SIZE} mm - {self.GRAT_PERP} passing (%)"
+    
+class LDEN(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='bulk_density', verbose_name='Sample ID')
 
+    LOCA_ID = models.CharField(max_length=50, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample (m)')
+    SAMP_REF = models.CharField(max_length=50, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(verbose_name='Depth to Top of Test Specimen (m)')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description', blank=True)
+    SPEC_PREP = models.TextField(verbose_name='Specimen Preparation Details', blank=True)
+    LDEN_TYPE = models.CharField(max_length=50, verbose_name='Type of Test Performed', blank=True)
+    LDEN_COND = models.CharField(max_length=50, verbose_name='Sample Condition', blank=True)
+    LDEN_SMITY = models.CharField(max_length=50, verbose_name='Type of Sample', blank=True)
+    LDEN_MC = models.FloatField(verbose_name='Water/Moisture Content (%)', null=True)
+    LDEN_BDEN = models.FloatField(verbose_name='Bulk Density (Mg/m³)', null=True)
+    LDEN_DDEN = models.FloatField(verbose_name='Dry Density (Mg/m³)', null=True)
+    LDEN_REM = models.TextField(verbose_name='Remarks', blank=True)
+    LDEN_METH = models.CharField(max_length=100, verbose_name='Test Method', blank=True)
+    LDEN_LAB = models.CharField(max_length=100, verbose_name='Laboratory Name', blank=True)
+    LDEN_CRED = models.CharField(max_length=50, verbose_name='Accrediting Body and Reference', blank=True)
+    TEST_STAT = models.CharField(max_length=50, verbose_name='Test Status', blank=True)
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference', blank=True)
+    SPEC_BASE = models.FloatField(verbose_name='Depth to Base of Specimen (m)', null=True)
+    LDEN_DEV = models.CharField(max_length=255, verbose_name='Deviation from Standard Procedure', blank=True)
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - BDEN: {self.LDEN_BDEN} DDEN: {self.LDEN_DDEN}"
+
+class LLPL(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='atterberg', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    LLPL_LL = models.FloatField(null=True, verbose_name='Liquid Limit')
+    LLPL_PL = models.FloatField(null=True, verbose_name='Plastic Limit')
+    LLPL_PI = models.FloatField(null=True, verbose_name='Plasticity Index')
+    LLPL_425 = models.FloatField(null=True, verbose_name='Percentage Passing 0.425mm Sieve')
+    LLPL_PREP = models.CharField(max_length=50, blank=True, verbose_name='Method of Preparation')
+    LLPL_STAB = models.FloatField(null=True, verbose_name='Amount of Stabiliser Added')
+    LLPL_STYP = models.CharField(max_length=50, blank=True, verbose_name='Type of Stabiliser Added')
+    LLPL_REM = models.TextField(blank=True, verbose_name='Remarks')
+    LLPL_METH = models.CharField(max_length=50, blank=True, verbose_name='Test Method')
+    LLPL_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
+    LLPL_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    LLPL_DEV = models.CharField(max_length=50, blank=True, verbose_name='Deviation from the Specified Procedure')
+    LLPL_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Type of Test')
+    LLPL_POIN = models.CharField(max_length=50, blank=True, verbose_name='Number of Points')
+    LLPL_CONE = models.CharField(max_length=50, blank=True, verbose_name='For Cone Method, Type of Cone')
+    LLPL_1PRE = models.FloatField(null=True, verbose_name='Mean of Test Readings, if One-Point Test')
+    LLPL_1PCF = models.FloatField(null=True, verbose_name='Correlation Factor if One-Point Test')
+    LLPL_SIZE = models.FloatField(null=True, verbose_name='Sieve Size if Other than 0.425mm')
+    LLPL_PASS = models.FloatField(null=True, verbose_name='Percentage Passing LLPL_SIZE Sieve if Other than 0.425mm')
+    LLPL_WC = models.FloatField(null=True, verbose_name='Water Content of the Specimen Before Removal of Particles')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - LL: {self.LLPL_LL} PL: {self.LLPL_PL} PI: {self.LLPL_PI}"
+
+class LPDN(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='particle_density', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    LPDN_PDEN = models.FloatField(null=True, verbose_name='Particle Density (Mg/m³)')
+    LPDN_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Type of Test')
+    LPDN_REM = models.TextField(blank=True, verbose_name='Remarks')
+    LPDN_METH = models.CharField(max_length=50, blank=True, verbose_name='Test Method')
+    LPDN_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
+    LPDN_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    LPDN_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Test Procedure')
+    LPDN_PVOL = models.FloatField(null=True, verbose_name='Pycnometer Volume if Used and Not 50ml')
+    LPDN_GAS = models.CharField(max_length=50, blank=True, verbose_name='Identity of Gas if Pycnometer Used')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - SG: {self.LPDN_PDEN}"
+    
+class LRES(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='electrical_resistivity', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    LRES_BDEN = models.FloatField(null=True, verbose_name='Bulk Density (Mg/m³)')
+    LRES_DDEN = models.FloatField(null=True, verbose_name='Dry Density (Mg/m³)')
+    LRES_MC = models.FloatField(null=True, verbose_name='Water/Moisture Content (%)')
+    LRES_COND = models.TextField(blank=True, verbose_name='Sample Condition Details')
+    LRES_LRES = models.FloatField(null=True, verbose_name='Temperature Corrected Resistivity (ohm m)')
+    LRES_CDIA = models.FloatField(null=True, verbose_name='Diameter of Container (mm)')
+    LRES_CCSA = models.FloatField(null=True, verbose_name='Container Cross-Sectional Area (mm²)')
+    LRES_CLEN = models.FloatField(null=True, verbose_name='Length of Container (mm)')
+    LRES_TEMP = models.FloatField(null=True, verbose_name='Temperature at Which Test Performed (°C)')
+    LRES_ELEC = models.TextField(blank=True, verbose_name='Type of Electrodes')
+    LRES_PENT = models.TextField(blank=True, verbose_name='Probes Dimensions and Details')
+    LRES_CSHP = models.CharField(max_length=50, blank=True, verbose_name='Shape of Container')
+    LRES_WAT = models.FloatField(null=True, verbose_name='Volume of Water (ml)')
+    LRES_WRES = models.FloatField(null=True, verbose_name='Water Resistivity (ohm m)')
+    LRES_PART = models.TextField(blank=True, verbose_name='Percentage of Large Particles Removed')
+    LRES_REM = models.TextField(blank=True, verbose_name='Remarks')
+    LRES_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    LRES_LAB = models.CharField(max_length=255, blank=True, verbose_name='Testing Laboratory Name')
+    LRES_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body Reference')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    LRES_DEV = models.TextField(blank=True, verbose_name='Deviation from Test Procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - {self.LRES_LRES} (ohm m)"
+
+class LTCH(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='thermal_conductivity', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    LTCH_COND = models.TextField(blank=True, verbose_name='Sample Condition')
+    LTCH_BDEN = models.FloatField(null=True, verbose_name='Bulk Density (Mg/m³)')
+    LTCH_DDEN = models.FloatField(null=True, verbose_name='Dry Density (Mg/m³)')
+    LTCH_MC = models.FloatField(null=True, verbose_name='Water/Moisture Content (%)')
+    LTCH_TCON = models.FloatField(null=True, verbose_name='Thermal Conductivity (W/(K-m))')
+    LTCH_TRES = models.FloatField(null=True, verbose_name='Thermal Resistivity (K-m/W)')
+    LTCH_TEMP = models.FloatField(null=True, verbose_name='Ambient Temperature at Test (°C)')
+    LTCH_PDIA = models.FloatField(null=True, verbose_name='Probe Diameter (mm)')
+    LTCH_PSPA = models.FloatField(null=True, verbose_name='Probe Spacing (mm)')
+    LTCH_PPEN = models.FloatField(null=True, verbose_name='Probe Penetration (mm)')
+    LTCH_PRBE = models.TextField(blank=True, verbose_name='Method of Probe Insertion')
+    LTCH_PART = models.TextField(blank=True, verbose_name='Particle Grain Size Removed')
+    LTCH_DEV = models.TextField(blank=True, verbose_name='Deviation from the Procedure')
+    LTCH_REM = models.TextField(blank=True, verbose_name='Remarks')
+    LTCH_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    LTCH_LAB = models.CharField(max_length=255, blank=True, verbose_name='Testing Laboratory Name')
+    LTCH_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body Reference')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated File Reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Conductivity: {self.LTCH_TCON} (W/(K-m)) Resistivity: {self.LTCH_TRES} (K-m/W)"
+    
+class RELD(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='minmax', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    RELD_DMAX = models.FloatField(null=True, verbose_name='Maximum Dry Density (Mg/m³)')
+    RELD_375 = models.FloatField(null=True, verbose_name='Percent Retained on 37.5mm Sieve (%)')
+    RELD_063 = models.FloatField(null=True, verbose_name='Percent Retained on 6.3mm Sieve (%)')
+    RELD_020 = models.FloatField(null=True, verbose_name='Percent Retained on 2mm Sieve (%)')
+    RELD_DMIN = models.FloatField(null=True, verbose_name='Minimum Dry Density (Mg/m³)')
+    RELD_REM = models.TextField(blank=True, verbose_name='Remarks')
+    RELD_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    RELD_LAB = models.CharField(max_length=255, blank=True, verbose_name='Testing Laboratory Name')
+    RELD_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body Reference')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated File Reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    RELD_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Min: {self.RELD_DMIN} Max: {self.RELD_DMAX}"
+    
+from django.db import models
+
+class PTST(models.Model):
+    SAMP_ID = models.ForeignKey('SAMP', on_delete=models.CASCADE, related_name='permeability', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=50, blank=True, verbose_name='Location Identifier')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=50, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    PTST_TESN = models.CharField(max_length=50, blank=True, verbose_name='Test Reference')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    PTST_COND = models.CharField(max_length=50, blank=True, verbose_name='Sample Condition')
+    PTST_SZUN = models.FloatField(null=True, verbose_name='Size Cut-off of Material Too Coarse for Testing')
+    PTST_UNS = models.FloatField(null=True, verbose_name='Proportion of Material Removed Above PTST')
+    PTST_DIAM = models.FloatField(null=True, verbose_name='Specimen Diameter')
+    PTST_LEN = models.FloatField(null=True, verbose_name='Specimen Length')
+    PTST_MC = models.FloatField(null=True, verbose_name='Initial Water/Moisture Content of Test Specimen')
+    PTST_BDEN = models.FloatField(null=True, verbose_name='Initial Bulk Density of Test Specimen')
+    PTST_DDEN = models.FloatField(null=True, verbose_name='Initial Dry Density')
+    PTST_IDIA = models.FloatField(null=True, verbose_name='Diameter of Drain for Radial Permeability in Hydraulic Cell')
+    PTST_DMET = models.TextField(blank=True, verbose_name='Method of Forming Central Drain')
+    PTST_VOID = models.FloatField(null=True, verbose_name='Initial Voids Ratio')
+    PTST_K = models.FloatField(null=True, verbose_name='Coefficient of Permeability')
+    PTST_TSTR = models.FloatField(null=True, verbose_name='Mean Effective Stress at which Permeability Measured')
+    PTST_HYGR = models.FloatField(null=True, verbose_name='Hydraulic Gradient at which Permeability Measured')
+    PTST_ISAT = models.FloatField(null=True, verbose_name='Initial Degree of Saturation')
+    PTST_SAT = models.TextField(blank=True, verbose_name='Details of Saturation')
+    PTST_CONS = models.TextField(blank=True, verbose_name='Details of Consolidation')
+    PTST_PDEN = models.FloatField(null=True, verbose_name='Particle Density with Prefix if Value Assumed')
+    PTST_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Type of Permeability Measurement')
+    PTST_CELL = models.CharField(max_length=50, blank=True, verbose_name='Type of Permeameter')
+    PTST_REM = models.TextField(blank=True, verbose_name='Remarks')
+    PTST_METH = models.CharField(max_length=50, blank=True, verbose_name='Test Method')
+    PTST_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
+    PTST_CRED = models.CharField(max_length=50, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=50, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='Associated File Reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    PTST_DEV = models.TextField(blank=True, verbose_name='Deviations from the Test Method')
+    PTST_WCIS = models.TextField(blank=True, verbose_name='Initial Water Content Source')
+    PTST_WCF = models.FloatField(null=True, verbose_name='Final Water Content of Test Specimen')
+    PTST_FSAT = models.FloatField(null=True, verbose_name='Final Degree of Saturation if Determined')
+    PTST_TEMP = models.FloatField(null=True, verbose_name='Average Laboratory Temperature at which the Test was Performed')
+    PTST_SOUR = models.TextField(blank=True, verbose_name='Source of Permeameter Water')
+    PTST_BACK = models.FloatField(null=True, verbose_name='Back Pressure')
+    PTST_BVAL = models.FloatField(null=True, verbose_name='B-Value, if Used')
+    PTST_LOSS = models.TextField(blank=True, verbose_name='Equipment Head Loss Corrections Applied to the Measurements')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - K: {self.PTST_K} m/x"
+    
 # Look at trying out Django Forms 
 # from django import forms
 # from .models import SAMP
