@@ -130,6 +130,24 @@ class SAMP(models.Model):
     def get_sample(self):
         return f"{self.LOCA_ID} - Top Depth: {self.SAMP_TOP} Ref: {self.SAMP_REF} Type: {self.SAMP_TYPE} ID: {self.SAMP_ID}"
     
+'''==================================== CORING ===================================='''
+
+class CORE(models.Model):
+    LOCA_ID = models.ForeignKey(LOCA, on_delete=models.CASCADE, related_name='coring', verbose_name='Location')
+
+    CORE_TOP = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Core Run')
+    CORE_BASE = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Base of Core Run')
+    CORE_PREC = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Percentage of Core Recovered in Core Run')
+    CORE_SREC = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Percentage of Solid Core Recovered in Core Run')
+    CORE_RQD = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Rock Quality Designation for Core Run')
+    CORE_DIAM = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Core Diameter')
+    CORE_DURN = models.TimeField(verbose_name='Time Taken to Drill Core Run')
+    CORE_REM = models.TextField(verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.LOCA_ID} - Top Depth: {self.CORE_TOP} Base Depth: {self.CORE_BASE} Core Rec: {self.CORE_PREC}% Solid Rec: {self.CORE_SREC}% RQD: {self.CORE_RQD}"
+    
 '''==================================== GEOLOGY ===================================='''
 
 class GEOL(models.Model):
@@ -323,7 +341,7 @@ class LNMC(models.Model):
     LNMC_DEV = models.TextField(verbose_name='Deviation from the Specified Procedure', blank=True, null=True)
 
     def __str__(self):
-        return f"{self.SAMP_ID} - {self.LNMC_MC}% Moisture Content"
+        return f"{self.SAMP_ID} - Moisture Content: {self.LNMC_MC}%"
     
 '''==================================== DENSITY ===================================='''
     
@@ -1120,6 +1138,249 @@ class SHBT(models.Model):
     SHBT_PVST = models.FloatField(verbose_name='Normal (Vertical) Stress at Peak')
     SHBT_RVST = models.FloatField(verbose_name='Normal (Vertical) Stress at Residual')
 
+'''==================================== ROCK ===================================='''
+
+'''================================= POINT LOAD ===================================='''
+
+class RPLT(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='point_load', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
+    SAMP_TOP = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    RPLT_PLS = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Uncorrected Point Load (Is)')
+    RPLT_PLSI = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Size Corrected Point Load Index (Is 50)')
+    RPLT_PLTF = models.CharField(max_length=255, verbose_name='Point Load Test Type')
+    RPLT_MC = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Water Content of Point Load Test Specimen')
+    RPLT_REM = models.TextField(verbose_name='Remarks')
+    RPLT_METH = models.CharField(max_length=255, verbose_name='Test Method')
+    RPLT_LAB = models.CharField(max_length=255, verbose_name='Name of Testing Laboratory/Organization')
+    RPLT_CRED = models.CharField(max_length=255, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+    SPEC_BASE = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Base of Specimen')
+    RPLT_DEV = models.TextField(verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.RPLT_PLTF} IS50: {self.RPLT_PLSI}"
+    
+class RUCS(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='ucs', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    RUCS_SDIA = models.FloatField(null=True, verbose_name='Specimen Diameter')
+    RUCS_LEN = models.FloatField(null=True, verbose_name='Specimen Length')
+    RUCS_MC = models.FloatField(null=True, verbose_name='Water Content of Specimen Tested')
+    RUCS_COND = models.CharField(max_length=255, blank=True, verbose_name='Condition of Specimen as Tested')
+    RUCS_DURN = models.CharField(max_length=255, blank=True, verbose_name='Test Duration')
+    RUCS_STRA = models.FloatField(null=True, verbose_name='Stress Rate')
+    RUCS_UCS = models.FloatField(null=True, verbose_name='Uniaxial Compressive Strength')
+    RUCS_MODE = models.CharField(max_length=255, blank=True, verbose_name='Mode of Failure')
+    RUCS_E = models.FloatField(null=True, verbose_name='Young\'s Modulus')
+    RUCS_MU = models.FloatField(null=True, verbose_name='Poisson\'s Ratio')
+    RUCS_ES = models.CharField(max_length=255, blank=True, verbose_name='Stress Level at Which Modulus Has Been Measured')
+    RUCS_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    RUCS_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
+    RUCS_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    RUCS_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Procedure')
+    RUCS_REM = models.TextField(blank=True, verbose_name='Remarks')
+    RUCS_MACH = models.CharField(max_length=255, blank=True, verbose_name='Type of Testing Machine')
+    RUCS_ESEC = models.FloatField(null=True, verbose_name='Young\'s Modulus, Secant')
+    RUCS_ETAN = models.FloatField(null=True, verbose_name='Young\'s Modulus, Tangent')
+    RUCS_EAVG = models.FloatField(null=True, verbose_name='Young\'s Modulus, Average')
+    RUCS_SSEC = models.CharField(max_length=255, blank=True, verbose_name='Stress Level at Which Secant Young\'s Modulus Has Been Measured')
+    RUCS_STAN = models.CharField(max_length=255, blank=True, verbose_name='Stress Level at Which Tangent Young\'s Modulus Has Been Measured')
+    RUCS_SAVG = models.CharField(max_length=255, blank=True, verbose_name='Stress Level at Which Average Young\'s Modulus Has Been Measured')
+    RUCS_MUS = models.FloatField(null=True, verbose_name='Poisson\'s Ratio, Secant')
+    RUCS_MUT = models.FloatField(null=True, verbose_name='Poisson\'s Ratio, Tangent')
+    RUCS_MUAV = models.FloatField(null=True, verbose_name='Poisson\'s Ratio, Average')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - UCS: {self.RUCS_UCS} MPa Young's Modulus: {self.RUCS_E} GPa Poisson's Ratio: {self.RUCS_MU}"
+    
+class RWCO(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='rock_moisture', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    RWCO_MC = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Water Content')
+    RWCO_TEMP = models.IntegerField(null=True, verbose_name='Temperature Sample Dried At')
+    RWCO_REM = models.TextField(blank=True, verbose_name='Remarks')
+    RWCO_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    RWCO_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
+    RWCO_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    RWCO_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Water Content: {self.RWCO_MC}%"
+
+class RDEN(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='rock_density', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    RDEN_MC = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Water Content of Specimen')
+    RDEN_SMC = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Saturated Water Content')
+    RDEN_BDEN = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Bulk Density')
+    RDEN_DDEN = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Dry Density')
+    RDEN_PORO = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Porosity')
+    RDEN_PDEN = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Apparent Particle Density')
+    RDEN_TEMP = models.IntegerField(null=True, verbose_name='Temperature Sample Dried At')
+    RDEN_REM = models.TextField(blank=True, verbose_name='Remarks')
+    RDEN_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    RDEN_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
+    RDEN_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+    RDEN_IDEN = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Intact Dry Density')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    RDEN_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Bulk Density: {self.RDEN_BDEN} kg/m³"
+    
+class RCAG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='rock_abrasive_general', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
+    SPEC_BASE = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Base of Specimen')
+    RCAG_DEV = models.TextField(blank=True, verbose_name='Deviation from the Specified Procedure')
+    RCAG_DATE = models.DateField(verbose_name='Date of Test')
+    RCAG_COND = models.CharField(max_length=255, blank=True, verbose_name='Condition of Specimen as Tested')
+    RCAG_GSIZ = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Maximum Grain Size')
+    RCAG_ANIS = models.CharField(max_length=255, blank=True, verbose_name='Planes of Weakness or Anisotropy Present')
+    RCAG_MACH = models.CharField(max_length=255, blank=True, verbose_name='Type of Apparatus')
+    RCAG_MMTD = models.CharField(max_length=255, blank=True, verbose_name='Measurement Method')
+    RCAG_CAIM = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='CAI Mean Value')
+    RCAG_CAIS = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='CAI Standard Deviation')
+    RCAG_ABCL = models.CharField(max_length=255, blank=True, verbose_name='Abrasiveness Classification')
+    RCAG_REM = models.TextField(blank=True, verbose_name='Remarks')
+    RCAG_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    RCAG_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
+    RCAG_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.LOCA_ID} - CAI: {self.RCAG_CAIM} Class: {self.RCAG_ABCL}"
+    
+class RCAT(models.Model):
+    SAMP_ID = models.ForeignKey(RCAG, on_delete=models.CASCADE, related_name='rock_abrasive_test', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Test Specimen')
+    RCAT_TESN = models.CharField(max_length=255, blank=True, verbose_name='Measurement Number')
+    RCAT_CUT = models.CharField(max_length=255, blank=True, verbose_name='Surface Condition')
+    RCAT_SDIR = models.CharField(max_length=255, blank=True, verbose_name='Direction of Scratching')
+    RCAT_STYH = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Rockwell Hardness HRC of Stylus')
+    RCAT_STYC = models.CharField(max_length=255, blank=True, verbose_name='Stylus Condition')
+    RCAT_CAI = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='As Measured CAI Value')
+    RCAT_CAIS = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Equivalent CAI Value')
+    RCAT_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.LOCA_ID} - CAI: {self.RCAT_CAI}"
+
+class RTEN(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='rock_tensile', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
+    SAMP_TOP = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    RTEN_SDIA = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Specimen Diameter')
+    RTEN_LEN = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Specimen Thickness')
+    RTEN_MC = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Water Content of Test Specimen')
+    RTEN_COND = models.CharField(max_length=255, verbose_name='Condition of Specimen as Tested')
+    RTEN_DURN = models.DurationField(verbose_name='Test Duration')
+    RTEN_STRA = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Stress Rate')
+    RTEN_TENS = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Tensile Strength')
+    RTEN_MODE = models.CharField(max_length=255, verbose_name='Mode of Failure')
+    RTEN_MACH = models.CharField(max_length=255, verbose_name='Testing Machine')
+    RTEN_REM = models.TextField(verbose_name='Remarks')
+    RTEN_METH = models.CharField(max_length=255, verbose_name='Test Method')
+    RTEN_LAB = models.CharField(max_length=255, verbose_name='Name of Testing Laboratory/Organization')
+    RTEN_CRED = models.CharField(max_length=255, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+    SPEC_BASE = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Base of Specimen')
+    RTEN_DEV = models.TextField(verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.LOCA_ID} - Tensile Strength: {self.RTEN_TENS} MPa"
+
+class RCCV(models.Model):
+    SAMP_ID = models.ForeignKey('SAMP', on_delete=models.CASCADE, related_name='chalk_crush', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
+    SAMP_TOP = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(verbose_name='Specimen Description')
+    SPEC_PREP = models.TextField(verbose_name='Details of Specimen Preparation')
+    RCCV_MC = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Water Content of Specimen Tested')
+    RCCV_CCV = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Chalk Crushing Value')
+    RCCV_100 = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Percentage Larger Than 10mm in Original Sample')
+    RCCV_REM = models.TextField(verbose_name='Remarks')
+    RCCV_METH = models.CharField(max_length=255, verbose_name='Test Method')
+    RCCV_LAB = models.CharField(max_length=255, verbose_name='Name of Testing Laboratory/Organization')
+    RCCV_CRED = models.CharField(max_length=255, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
+    SPEC_BASE = models.DecimalField(max_digits=10, decimal_places=3, verbose_name='Depth to Base of Specimen')
+    RCCV_DEV = models.TextField(verbose_name='Deviation from the Specified Procedure')
+
+    def __str__(self):
+        return f"{self.LOCA_ID} - Crush: {self.RCCV_CCV}"
 
 # Look at trying out Django Forms 
 # from django import forms
@@ -1146,4 +1407,4 @@ _consol = ['CONG','CONS','CODG','CODT'] ✅
 
 _advanced = ['DSSG','DSST','IRSG', 'IRST', 'IRSV', 'RESG','REST','RESV','RESD']
 
-_rock = ['RPLT', 'RCAG', 'RDEN', 'RUCS', 'RWCO']'''
+_rock = ['RPLT', 'RUCS', 'RCAG', 'RCAT', 'RDEN', 'RWCO', 'RTEN', 'RCCV']✅ '''
