@@ -95,7 +95,7 @@ class SAMP(models.Model):
     SAMP_ID = models.CharField(primary_key=True, max_length=50, verbose_name='Sample Unique Identifier')
     SAMP_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Sample')
     SAMP_DTIM = models.DateTimeField(blank=True, verbose_name='Date and Time Sample Taken')
-    SAMP_UBLO = models.IntegerField(null=True, verbose_name='Number of Blows Required to Drive Sampler')
+    SAMP_UBLO = models.FloatField(null=True, verbose_name='Number of Blows Required to Drive Sampler')
     SAMP_CONT = models.CharField(max_length=255, blank=True, verbose_name='Sample Container')
     SAMP_PREP = models.CharField(max_length=255, blank=True, verbose_name='Details of Sample Preparation at Time of Sampling')
     SAMP_SDIA = models.FloatField(null=True, verbose_name='Sample Diameter')
@@ -213,9 +213,9 @@ class SCPG(models.Model):
         return f"{self.SCPG_TESN} - {self.SCPG_DEPTH}m"
 
 class SCPT(models.Model):
-    SCPG_TESN = models.OneToOneField('SCPG', on_delete=models.CASCADE, related_name='cpt_test', verbose_name='Cone ID')
+    SCPG_TESN = models.OneToOneField(SCPG, on_delete=models.CASCADE, related_name='cpt_test', verbose_name='Cone ID')
 
-    SCPT_DPTH = models.FloatField(primary_key=True, verbose_name='Depth of Result (m)')
+    SCPT_DPTH = models.FloatField(primary_key=True, verbose_name='Depth of Res`ult` (m)')
     SCPT_RES = models.FloatField(verbose_name='Cone Resistance (qc) (MPa)')
     SCPT_FRES = models.FloatField(verbose_name='Local Unit Side Friction Resistance (fs) (MPa)')
     SCPT_PWP1 = models.FloatField(verbose_name='Face Porewater Pressure (u1) (kPa)')
@@ -821,7 +821,7 @@ class CONS(models.Model):
     SAMP_TYPE = models.CharField(max_length=50, blank=True, verbose_name='Sample type')
     SPEC_REF = models.CharField(max_length=50, blank=True, verbose_name='Specimen reference')
     SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of specimen')
-    CONS_INCN = models.IntegerField(blank=True, verbose_name='Oedometer stress increment')
+    CONS_INCN = models.FloatField(blank=True, verbose_name='Oedometer stress increment')
     CONS_IVR = models.FloatField(null=True, verbose_name='Voids ratio at start of increment')
     CONS_INCF = models.FloatField(null=True, verbose_name='Stress at end of stress increment/decrement')
     CONS_INCE = models.FloatField(null=True, verbose_name='Voids ratio at end of stress increment')
@@ -1118,7 +1118,7 @@ class SHBT(models.Model):
     SHBT_NORM = models.FloatField(verbose_name='Normal Stress Applied')
     SHBT_DISP = models.FloatField(verbose_name='Displacement Rate for Peak Stress Stage')
     SHBT_DISR = models.FloatField(verbose_name='Displacement Rate for Residual Stress Stage')
-    SHBT_REVS = models.IntegerField(verbose_name='Number of Traverses if Residual Test')
+    SHBT_REVS = models.FloatField(verbose_name='Number of Traverses if Residual Test')
     SHBT_PEAK = models.FloatField(verbose_name='Peak Shear Stress')
     SHBT_RES = models.FloatField(verbose_name='Residual Shear Stress')
     SHBT_PDIS = models.FloatField(verbose_name='Horizontal Displacement at Peak')
@@ -1230,7 +1230,7 @@ class RWCO(models.Model):
     SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
     SPEC_PREP = models.TextField(blank=True, verbose_name='Details of Specimen Preparation')
     RWCO_MC = models.FloatField(verbose_name='Water Content')
-    RWCO_TEMP = models.IntegerField(null=True, verbose_name='Temperature Sample Dried At')
+    RWCO_TEMP = models.FloatField(null=True, verbose_name='Temperature Sample Dried At')
     RWCO_REM = models.TextField(blank=True, verbose_name='Remarks')
     RWCO_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
     RWCO_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
@@ -1263,7 +1263,7 @@ class RDEN(models.Model):
     RDEN_DDEN = models.FloatField(verbose_name='Dry Density')
     RDEN_PORO = models.FloatField(verbose_name='Porosity')
     RDEN_PDEN = models.FloatField(verbose_name='Apparent Particle Density')
-    RDEN_TEMP = models.IntegerField(null=True, verbose_name='Temperature Sample Dried At')
+    RDEN_TEMP = models.FloatField(null=True, verbose_name='Temperature Sample Dried At')
     RDEN_REM = models.TextField(blank=True, verbose_name='Remarks')
     RDEN_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
     RDEN_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of Testing Laboratory/Organization')
@@ -1422,7 +1422,7 @@ class PMTG(models.Model):
     PMTG_ENV = models.TextField(verbose_name='Details of Weather and Environmental Conditions During Test')
     PMTG_REM = models.TextField(verbose_name='Remarks')
     FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
-    PMTG_NUAR = models.IntegerField(verbose_name='Number of Arms')
+    PMTG_NUAR = models.FloatField(verbose_name='Number of Arms')
     PMTG_ORNT = models.FloatField(verbose_name='Bearing of Arm 1')
     PMTG_AXIS = models.CharField(max_length=255, verbose_name='Arm Combination Used for Analysis')
 
@@ -1430,12 +1430,11 @@ class PMTG(models.Model):
         return f"{self.LOCA_ID} - Type: {self.PMTG_TYPE} Su: {self.PMTG_CU}"
 
 class PMTD(models.Model):
-    PMTG_TESN = models.OneToOneField(PMTG, on_delete=models.CASCADE, related_name='pressuremeter_test', verbose_name='Test ID')
+    PMTG_TESN = models.ForeignKey(PMTG, on_delete=models.CASCADE, related_name='pressuremeter_test_id', verbose_name='Test ID')
+    PMTG_DPTH = models.ForeignKey(PMTG, on_delete=models.CASCADE, related_name='pressuremeter_test_depth', verbose_name='Test ID')
 
-    LOCA_ID = models.CharField(max_length=255, verbose_name='Location Identifier')
-    PMTG_DPTH = models.FloatField(verbose_name='Depth of Test')
-    PMTG_TESN = models.CharField(max_length=255, verbose_name='Test Reference')
-    PMTD_SEQ = models.IntegerField(verbose_name='Sequence Number')
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
+    PMTD_SEQ = models.FloatField(verbose_name='Sequence Number')
     PMTD_ARM1 = models.FloatField(verbose_name='Axis 1 Displacement')
     PMTD_ARM2 = models.FloatField(verbose_name='Axis 2 Displacement')
     PMTD_ARM3 = models.FloatField(verbose_name='Axis 3 Displacement')
@@ -1457,11 +1456,11 @@ class PMTD(models.Model):
     PMTD_SAME = models.FloatField(verbose_name='Mean Arm Displacement')
 
 class PMTL(models.Model):
-    PMTG_TESN = models.OneToOneField(PMTG, on_delete=models.CASCADE, related_name='pressuremeter_loops', verbose_name='Test ID')
+    PMTG_TESN = models.OneToOneField(PMTG, on_delete=models.CASCADE, related_name='pressuremeter_loops_id', verbose_name='Test ID')
+    PMTG_DPTH = models.ForeignKey(PMTG, on_delete=models.CASCADE, related_name='pressuremeter_loops_depth', verbose_name='Test ID')
 
     LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
-    PMTG_DPTH = models.FloatField(verbose_name='Depth of Test')
-    PMTL_LNO = models.IntegerField(verbose_name='Unload/Reload Loop Number')
+    PMTL_LNO = models.FloatField(verbose_name='Unload/Reload Loop Number')
     PMTL_GAA = models.FloatField(verbose_name='Unload/Reload Shear Modulus Average')
     PMTL_SINC = models.FloatField(verbose_name='Mean Strain')
     PMTL_PINC = models.FloatField(verbose_name='Mean Pressure')
@@ -1473,10 +1472,15 @@ class PMTL(models.Model):
     FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
     PMTL_AXIS = models.CharField(max_length=255, verbose_name='Arm Combination Used for Analysis')
 
+'''==================================== ADVANCED ===================================='''
+
+'''================================ DSS (WITH CYCLIC) ===================================='''
+
+
 class DSSG(models.Model):
     SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='dss_general', verbose_name='Sample ID')
 
-    LOCA_ID = models.CharField(max_length=255, verbose_name='Location Identifier')
+    LOCA_ID = models.CharField(max_length=255, verbose_name='Location')
     SAMP_TOP = models.FloatField(verbose_name='Depth to Top of Sample')
     SAMP_REF = models.CharField(max_length=255, verbose_name='Sample Reference')
     SAMP_TYPE = models.CharField(max_length=255, verbose_name='Sample Type')
@@ -1485,48 +1489,502 @@ class DSSG(models.Model):
     DSSG_TESN = models.CharField(max_length=255, verbose_name='DSS Test Number')
     SPEC_DESC = models.TextField(verbose_name='Specimen Description')
     SPEC_PREP = models.CharField(max_length=255, verbose_name='Specimen Preparation Technique')
-    SPEC_COND = models.CharField(max_length=255, verbose_name='Specimen Condition')
+    DSSG_COND = models.CharField(max_length=255, blank=True, verbose_name='Condition of Specimen as Tested')
+    DSSG_TYPE = models.CharField(max_length=255, verbose_name='Test Type')
+    DSSG_LAB = models.CharField(max_length=255, verbose_name='Name of Testing Laboratory/Organisation')
     DSSG_DESC = models.TextField(verbose_name='Description of the Test')
     DSSG_DRCO = models.CharField(max_length=255, verbose_name='Drainage Condition')
-    DSSG_TYPE = models.CharField(max_length=255, verbose_name='Test Type')
     DSSG_STRR = models.FloatField(verbose_name='Strain Rate During Shear Phase')
     DSSG_PDEN = models.FloatField(verbose_name='Particle Density')
-    DSSG_BDEN = models.FloatField(verbose_name='Estimated in Situ Bulk Density')
     DSSG_EVES = models.FloatField(verbose_name='Estimated in Situ Vertical Effective Stress')
     DSSG_METH = models.CharField(max_length=255, verbose_name='Test Method')
-    DSSG_LAB = models.CharField(max_length=255, verbose_name='Name of Testing Laboratory/Organisation')
     DSSG_CRED = models.CharField(max_length=255, verbose_name='Accrediting Body and Reference Number')
     DSSG_REM = models.TextField(verbose_name='General Remarks')
-    FILE_FSET = models.CharField(max_length=255, verbose_name='Associated File Reference')
+    FILE_FSET = models.CharField(max_length=255, verbose_name='File Reference')
     DSSG_DMAX = models.FloatField(verbose_name='Corresponding Maximum Dry Density')
     DSSG_EMIN = models.FloatField(verbose_name='Corresponding Minimum Void Ratio')
     DSSG_DMIN = models.FloatField(verbose_name='Corresponding Minimum Dry Density')
     DSSG_EMAX = models.FloatField(verbose_name='Corresponding Maximum Void Ratio')
 
+class DSST(models.Model):
+    DSSG_TESN = models.OneToOneField(DSSG, on_delete=models.CASCADE, related_name='dss_test', verbose_name='Test number')
 
-# Look at trying out Django Forms 
-# from django import forms
-# from .models import SAMP
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample type')
+    SAMP_ID = models.CharField(max_length=255, blank=True, verbose_name='Sample ID')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Specimen depth')
+    DSST_IDIA = models.FloatField(null=True, verbose_name='Initial sample diameter')
+    DSST_ILEN = models.FloatField(null=True, verbose_name='Initial sample height')
+    DSST_IMC = models.FloatField(null=True, verbose_name='Initial water/moisture content')
+    DSST_ITDE = models.FloatField(null=True, verbose_name='Initial bulk density')
+    DSST_IDDE = models.FloatField(null=True, verbose_name='Initial dry density')
+    DSST_ISAT = models.FloatField(null=True, verbose_name='Initial degree of saturation')
+    DSST_IVR = models.FloatField(null=True, verbose_name='Initial void ratio')
+    DSST_IID = models.FloatField(null=True, verbose_name='Initial relative density')
+    DSST_PPCP = models.FloatField(null=True, verbose_name='Pre-consolidation pressure used for pre-loading')
+    DSST_PMVS = models.FloatField(null=True, verbose_name='Max vertical effective stress during pre-loading')
+    DSST_CMC = models.FloatField(null=True, verbose_name='Post-consolidation moisture content')
+    DSST_CTDE = models.FloatField(null=True, verbose_name='Post-consolidation bulk density')
+    DSST_CDDE = models.FloatField(null=True, verbose_name='Post-consolidation dry density')
+    DSST_CSAT = models.FloatField(null=True, verbose_name='Post-consolidation degree of saturation')
+    DSST_CVR = models.FloatField(null=True, verbose_name='Post-consolidation voids ratio')
+    DSST_CID = models.FloatField(null=True, verbose_name='Post-consolidation relative density')
+    DSST_CEFF = models.FloatField(null=True, verbose_name='Post-consolidation vertical effective stress')
+    DSST_CAST = models.FloatField(null=True, verbose_name='Post-consolidation vertical strain')
+    DSST_CVST = models.FloatField(null=True, verbose_name='Post-consolidation volumetric strain')
+    DSST_CSQ = models.CharField(max_length=255, blank=True, verbose_name='Sample quality in accordance with method described in Lunne et al. (2006), i.e. Δe/e0')
+    DSST_FMC = models.FloatField(null=True, verbose_name='Moisture content at failure')
+    DSST_FTDE = models.FloatField(null=True, verbose_name='Bulk density at failure')
+    DSST_FDDE = models.FloatField(null=True, verbose_name='Dry density at failure')
+    DSST_FSAT = models.FloatField(null=True, verbose_name='Degree of saturation at failure')
+    DSST_FVR = models.FloatField(null=True, verbose_name='Void ratio at failure')
+    DSST_FSHS = models.FloatField(null=True, verbose_name='Shear stress at failure')
+    DSST_FNMP = models.FloatField(null=True, verbose_name='Normal stress at failure')
+    DSST_FAST = models.FloatField(null=True, verbose_name='Vertical strain at failure')
+    DSST_FVST = models.FloatField(null=True, verbose_name='Volumetric strain at failure')
+    DSST_FSST = models.FloatField(null=True, verbose_name='Shear strain at failure')
+    DSST_FCPP = models.FloatField(null=True, verbose_name='Inferred pore pressure at failure')
+    DSST_FSM = models.FloatField(null=True, verbose_name='Secant shear modulus at failure')
 
-# class SampForm(forms.ModelForm):
-#     class Meta:
-#         model = SAMP
-#         fields = '__all__'
-#         widgets = {
-#             'SAMP_TOP': forms.NumberInput(attrs={'required': 'required'}),
-#             'SAMP_REF': forms.TextInput(attrs={'required': 'required'}),
-#             'SAMP_TYPE': forms.TextInput(attrs={'required': 'required'}),
-#             'SAMP_ID': forms.TextInput(attrs={'required': 'required'}),
-#         }
+    DSST_PRDE = models.TextField(blank=True, verbose_name='Description of pre-shearing process')        # CYCLIC SHEARING FIELDS START
+    DSST_PRCS = models.FloatField(null=True, verbose_name='Cyclic shear stress during pre-shearing')
+    DSST_PRCN = models.FloatField(null=True, verbose_name='Number of cycles during pre-shearing')
+    DSST_PRMS = models.FloatField(null=True, verbose_name='Vertical effective stress during pre-shearing')
+    DSST_CSR = models.FloatField(null=True, verbose_name='Cyclic stress ratio')
+    DSST_FRS = models.FloatField(null=True, verbose_name='Reference stress')
+    DSST_CFRQ = models.FloatField(null=True, verbose_name='Cycle frequency')
+    DSST_FAAS = models.FloatField(null=True, verbose_name='Average shear stress at failure')
+    DSST_FSSA = models.FloatField(null=True, verbose_name='Cyclic shear stress at failure')
+    DSST_FCTF = models.FloatField(null=True, verbose_name='Total number of cycles at failure')
+    DSST_FASS = models.FloatField(null=True, verbose_name='Average shear strain at failure')
+    DSST_FPSS = models.FloatField(null=True, verbose_name='Permanent shear strain at failure')
+    DSST_FCSS = models.FloatField(null=True, verbose_name='Cyclic shear strain at failure')
+    DSST_FPPR = models.FloatField(null=True, verbose_name='Permanent excess pore pressure ratio at failure')
+    DSST_PP10 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 10% permanent excess pore pressure ratio')
+    DSST_PP20 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 20% permanent excess pore pressure ratio')
+    DSST_PP30 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 30% permanent excess pore pressure ratio')
+    DSST_PP40 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 40% permanent excess pore pressure ratio')
+    DSST_PP50 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 50% permanent excess pore pressure ratio')
+    DSST_PP60 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 60% permanent excess pore pressure ratio')
+    DSST_PP70 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 70% permanent excess pore pressure ratio')
+    DSST_PP80 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 80% permanent excess pore pressure ratio')
+    DSST_PP90 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 90% permanent excess pore pressure ratio')
+    DSST_PPMX = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 97.5% permanent excess pore pressure ratio')
+    DSST_SS01 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 1(%) cyclic shear strain')
+    DSST_SS02 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 2(%) cyclic shear strain')
+    DSST_SS05 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 5(%) cyclic shear strain')
+    DSST_SS10 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 10(%) cyclic shear strain')
+    DSST_SS15 = models.FloatField(null=True, verbose_name='Number of cycles taken to accumulate 15(%) cyclic shear strain')
+    DSST_GP10 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 10%')
+    DSST_GP20 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 20%')
+    DSST_GP30 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 30%')
+    DSST_GP40 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 40%')
+    DSST_GP50 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 50%')
+    DSST_GP60 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 60%')
+    DSST_GP70 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 70%')
+    DSST_GP80 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 80%')
+    DSST_GP90 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 90%')
+    DSST_GPMX = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at permanent excess pore water pressure of 97.5%')
+    DSST_GS01 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at cyclic shear strain of 1%')
+    DSST_GS02 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at cyclic shear strain of 2%')
+    DSST_GS05 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at cyclic shear strain of 5%')
+    DSST_GS10 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at cyclic shear strain of 10%')
+    DSST_GS15 = models.FloatField(null=True, verbose_name='Normalised secant shear modulus (GN/G1) at cyclic shear strain of 15%')
+    DSST_REM = models.TextField(blank=True, verbose_name='General remarks and observations associated with the test')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference (e.g. ASCII .csv file containing logged instrumentation data)')
 
-'''_class = ['LNMC','LDEN','GRAG','GRAT','LLPL', 'LPDN', 'LRES', 'LTCH', 'RELD', 'PTST'] ✅
+    def __str__(self):
+        return f"{self.SAMP_ID} - Test Number: {self.DSSG_TESN}"
+    
+'''================================= RING SHEAR ===================================='''
 
-_chem = ['GCHM','ERES'] ✅
+class IRSG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='ring_shear_general', verbose_name='Sample ID')
 
-_strength = ['TRIG','TRIT', 'LVAN', 'LHVN', 'TORV', 'LPEN', 'LDYN', 'SHBG','SHBT', 'TREG', 'TRET', 'TXTG', 'TXTT'] ✅
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of test specimen')
+    IRSG_TESN = models.CharField(max_length=255, blank=True, verbose_name='Interface ring shear test number')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Geological description of the specimen')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Specimen preparation / reconstitution technique')
+    IRSG_COND = models.CharField(max_length=255, blank=True, verbose_name='Condition of Specimen as Tested')
+    IRSG_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Test apparatus')
+    IRSG_LAB = models.CharField(max_length=255, blank=True, verbose_name='Testing laboratory')
+    IRSG_EVES = models.FloatField(null=True, verbose_name='Estimated in situ vertical effective stress')
+    IRSG_DRCO = models.CharField(max_length=255, blank=True, verbose_name='Drainage condition')
+    IRSG_RCLA = models.FloatField(null=True, verbose_name='Center line average roughness, RCLA')
+    IRSG_RSLW = models.FloatField(null=True, verbose_name='Rate of slow shearing impulse')
+    IRSG_RFST = models.FloatField(null=True, verbose_name='Rate of fast shearing impulse')
+    IRSG_DESM = models.TextField(blank=True, verbose_name='Related design methods')
+    IRSG_METH = models.CharField(max_length=255, blank=True, verbose_name='Test method')
+    IRSG_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting body and reference number')
+    IRSG_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
 
-_consol = ['CONG','CONS','CODG','CODT'] ✅
+    def __str__(self):
+        return f"{self.SAMP_ID} - Test Number: {self.IRSG_TESN}"
+    
+class IRST(models.Model):
+    IRSG_TESN = models.OneToOneField(IRSG, on_delete=models.CASCADE, related_name='ring_shear_test', verbose_name='Test ID')
 
-_advanced = ['DSSG', 'DSST', 'IRSG', 'IRST', 'IRSV', 'RESG', 'REST', 'RESV','RESD']
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample type')
+    SAMP_ID = models.CharField(max_length=255, blank=True, verbose_name='Sample ID')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of test specimen')
+    IRST_ODIA = models.FloatField(null=True, verbose_name='Outer diameter of specimen')
+    IRST_IDIA = models.FloatField(null=True, verbose_name='Inner diameter of specimen')
+    IRST_HIGT = models.FloatField(null=True, verbose_name='Height of specimen')
+    IRST_IMC = models.FloatField(null=True, verbose_name='Initial moisture content')
+    IRST_IFNS = models.FloatField(null=True, verbose_name='Normal stress prior to fast shearing (consolidation stage 1)')
+    IRST_ISNS = models.FloatField(null=True, verbose_name='Normal stress prior to slow shearing (consolidation stage 1)')
+    IRST_COVD = models.FloatField(null=True, verbose_name='Vertical displacement during consolidation')
+    IRST_FMC = models.FloatField(null=True, verbose_name='Final water/moisture content')
+    IRST_FFTD = models.FloatField(null=True, verbose_name='Total shearing displacement during fast impulse shearing')
+    IRST_FFNP = models.IntegerField(blank=True, null=True, verbose_name='Number of fast shearing pulses')
+    IRST_FFPP = models.IntegerField(blank=True, null=True, verbose_name='Pause period between fast impulses')
+    IRST_FFTH = models.FloatField(null=True, verbose_name='Total height change during fast shearing')
+    IRST_FSTD = models.FloatField(null=True, verbose_name='Total shearing displacement during slow impulse shearing')
+    IRST_FSTH = models.FloatField(null=True, verbose_name='Total height change during slow shearing')
+    IRST_FPEA = models.FloatField(null=True, verbose_name='Peak shear stress')
+    IRST_RSHS = models.FloatField(null=True, verbose_name='Residual shear stress')
+    IRST_PSSD = models.FloatField(null=True, verbose_name='Displacement at peak shear stress')
+    IRST_RSSD = models.FloatField(null=True, verbose_name='Displacement at residual shear stress')
+    IRST_FA10 = models.FloatField(null=True, verbose_name='Average interface friction angle at 10 mm (±0.5 mm)')
+    IRST_SPHI = models.FloatField(null=True, verbose_name='Peak interface friction angle from slow shearing stage')
+    IRST_SRPH = models.FloatField(null=True, verbose_name='Residual interface friction angle from slow shearing stage')
+    IRST_FPHI = models.FloatField(null=True, verbose_name='Peak interface friction angle from fast shearing stage')
+    IRST_FRPH = models.FloatField(null=True, verbose_name='Residual interface friction angle from fast shearing stage')
+    IRST_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+    IRST_FULT = models.FloatField(null=True, verbose_name='Ultimate Interface Friction Angle')       # NON-STANDARD
 
-_rock = ['RPLT', 'RUCS', 'RCAG', 'RCAT', 'RDEN', 'RWCO', 'RTEN', 'RCCV']✅ '''
+    def __str__(self):
+        return f"{self.SAMP_ID} - Residual shear stress: {self.IRST_RSHS} Residual Phi Slow: {self.IRST_SRPH} Residual Phi Fast: {self.IRST_FRPH}"
+    
+    def get_ultimate(self):
+        return f"{self.SAMP_ID} - Ultimate Interface Friction Angle: {self.IRST_FULT}"
+
+class IRSV(models.Model):
+    IRSG_TESN = models.OneToOneField(IRSG, on_delete=models.CASCADE, related_name='ring_shear_values', verbose_name='Test ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample type')
+    SAMP_ID = models.CharField(max_length=255, blank=True, verbose_name='Sample ID')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of test specimen')
+    IRSV_TESP = models.CharField(max_length=255, blank=True, verbose_name='Test phase')
+    IRSV_DATP = models.CharField(max_length=255, blank=True, verbose_name='Data point')
+    IRSV_DISP = models.FloatField(null=True, verbose_name='Measured shear displacement')
+    IRSV_SRTM = models.FloatField(null=True, verbose_name='Square root time')
+    IRSV_AXLD = models.FloatField(null=True, verbose_name='Axial load')
+    IRSV_AXDP = models.FloatField(null=True, verbose_name='Axial displacement')
+    IRSV_AXST = models.FloatField(null=True, verbose_name='Axial strain')
+    IRSV_SHS = models.FloatField(null=True, verbose_name='Shear stress')
+    IRSV_SHDP = models.FloatField(null=True, verbose_name='Shear displacement/Horizontal displacement')
+    IRSV_REM = models.TextField(blank=True, verbose_name='Remarks')
+
+    def __str__(self):
+        return f"{self.IRSG_TESN} - Phase: {self.IRSV_TESP} - Data Point: {self.IRSV_DATP}"
+
+'''================================= RESONANT COLUMN ===================================='''
+
+class RESG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='res_col_general', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of test specimen')
+    RESG_TESN = models.CharField(max_length=255, blank=True, verbose_name='Resonant column test number')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Geological description of the specimen')
+    SPEC_PREP = models.TextField(blank=True, verbose_name='Specimen preparation / reconstitution technique')
+    RESG_COND = models.CharField(max_length=255, blank=True, verbose_name='Condition of Specimen as Tested')
+    RESG_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Test apparatus')
+    RESG_LAB = models.CharField(max_length=255, blank=True, verbose_name='Name of testing laboratory/organisation')
+    RESG_ORI = models.CharField(max_length=255, blank=True, verbose_name='Sample orientation')
+    RESG_EVES = models.FloatField(null=True, verbose_name='Estimated in situ vertical effective stress')
+    RESG_METH = models.CharField(max_length=255, blank=True, verbose_name='Test method')
+    RESG_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting body and reference number')
+    RESG_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Cond: {self.RESG_COND} Lab: {self.RESG_LAB}"
+    
+class REST(models.Model):
+    RESG_TESN = models.OneToOneField(RESG, on_delete=models.CASCADE, related_name='res_col_test', verbose_name='Test ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample type')
+    SAMP_ID = models.CharField(max_length=255, blank=True, verbose_name='Sample ID')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of test specimen')
+    REST_IMC = models.FloatField(null=True, verbose_name='Initial moisture content')
+    REST_IDIA = models.FloatField(null=True, verbose_name='Initial sample diameter')
+    REST_ILEN = models.FloatField(null=True, verbose_name='Initial sample length')
+    REST_ITDE = models.FloatField(null=True, verbose_name='Initial bulk density')
+    REST_IDDE = models.FloatField(null=True, verbose_name='Initial dry density')
+    REST_IVR = models.FloatField(null=True, verbose_name='Initial void ratio')
+    REST_ISAT = models.FloatField(null=True, verbose_name='Initial degree of saturation')
+    REST_SBVA = models.FloatField(null=True, verbose_name='Post-saturation Skempton B-value')
+    REST_SBAC = models.FloatField(null=True, verbose_name='Post-saturation back pressure')
+    REST_SEAS = models.FloatField(null=True, verbose_name='Post-saturation effective axial stress')
+    REST_SERS = models.FloatField(null=True, verbose_name='Post-saturation effective radial stress')
+    REST_CMC = models.FloatField(null=True, verbose_name='Post-consolidation moisture content')
+    REST_CTDE = models.FloatField(null=True, verbose_name='Post-consolidation bulk density')
+    REST_CDDE = models.FloatField(null=True, verbose_name='Post-consolidation dry density')
+    REST_CSAT = models.FloatField(null=True, verbose_name='Post-consolidation degree of saturation')
+    REST_CID = models.FloatField(null=True, verbose_name='Post-consolidation relative density')
+    REST_CVR = models.FloatField(null=True, verbose_name='Post-consolidation voids ratio')
+    REST_CEAS = models.FloatField(null=True, verbose_name='Post-consolidation effective axial stress')
+    REST_CERS = models.FloatField(null=True, verbose_name='Post-consolidation effective radial stress')
+    REST_CAST = models.FloatField(null=True, verbose_name='Post-consolidation axial strain')
+    REST_CVST = models.FloatField(null=True, verbose_name='Post-consolidation volumetric strain')
+    REST_CPWP = models.FloatField(null=True, verbose_name='Post-consolidation pore pressure')
+    REST_FTDE = models.FloatField(null=True, verbose_name='Final shear/resonance bulk density')
+    REST_FDDE = models.FloatField(null=True, verbose_name='Final shear/resonance dry density')
+    REST_FVR = models.FloatField(null=True, verbose_name='Final shear/resonance void ratio')
+    REST_FSST = models.FloatField(null=True, verbose_name='Final shear/resonance maximum shear strain')
+    REST_FVST = models.FloatField(null=True, verbose_name='Final shear/resonance maximum volumetric strain')
+    REST_FDAM = models.FloatField(null=True, verbose_name='Final shear/resonance maximum damping')
+    REST_FSMR = models.FloatField(null=True, verbose_name='Final shear/resonance normalised shear modulus by maximum shear modulus')
+    REST_FNDA = models.FloatField(null=True, verbose_name='Final shear/resonance normalised damping')
+    REST_FG = models.FloatField(null=True, verbose_name='Final shear/resonance maximum small strain shear modulus')
+    REST_FGST = models.FloatField(null=True, verbose_name='Final shear/resonance shear strain at maximum small strain shear modulus')
+    REST_SWVL = models.FloatField(null=True, verbose_name='Final shear/resonance maximum shear wave velocity')
+    REST_FTIM = models.FloatField(null=True, verbose_name='Final shear/resonance elapsed time')
+    REST_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Test Number: {self.RESG_TESN}"
+
+class RESV(models.Model):
+    RESG_TESN = models.OneToOneField(RESG, on_delete=models.CASCADE, related_name='res_col_values', verbose_name='Test ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to top of sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample type')
+    SAMP_ID = models.CharField(max_length=255, blank=True, verbose_name='Sample ID')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to top of test specimen')
+    RESV_DATP = models.IntegerField(null=True, verbose_name='Data point')
+    RESV_RCSS = models.FloatField(null=True, verbose_name='Final shear/resonance shear strain')
+    RESV_RCSM = models.FloatField(null=True, verbose_name='Final shear/resonance small strain shear modulus')
+    RESV_RCDR = models.FloatField(null=True, verbose_name='Final shear/resonance damping ratio')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Index: {self.RESV_DATP} Shear Strain: {self.RESV_DATP}"
+
+'''================================= CYCLIC ===================================='''
+
+class CTRG(models.Model):
+    SAMP_ID = models.ForeignKey(SAMP, on_delete=models.CASCADE, related_name='cyclic_general', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    SPEC_DESC = models.TextField(blank=True, verbose_name='Specimen Description')
+    SPEC_PREP = models.CharField(max_length=255, blank=True, verbose_name='Specimen Preparation Technique Used')
+    SPEC_BASE = models.FloatField(null=True, verbose_name='Depth to Base of Specimen')
+    CTRG_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Type of Test')
+    CTRG_MCI = models.FloatField(null=True, verbose_name='Initial Water/Moisture Content')
+    CTRG_MCF = models.FloatField(null=True, verbose_name='Final Water/Moisture Content')
+    CTRG_H2O = models.TextField(blank=True, verbose_name='Description of Water Used for Filter Flushing')
+    CTRG_SBP = models.FloatField(null=True, verbose_name='Saturation Back Pressure')
+    CTRG_SATR = models.FloatField(null=True, verbose_name='Initial Degree of Saturation after Back Pressure')
+    CTRG_IRD = models.FloatField(null=True, verbose_name='Initial Sample Relative Density')
+    CTRG_SDIA = models.FloatField(null=True, verbose_name='Initial Specimen Diameter')
+    CTRG_HIGT = models.FloatField(null=True, verbose_name='Initial Height of Specimen')
+    CTRG_TMSS = models.FloatField(null=True, verbose_name='Total Mass of Installed Specimen')
+    CTRG_PDEN = models.FloatField(null=True, verbose_name='Particle Density (if value assumed, prefix with #)')
+    CTRG_MADD = models.FloatField(null=True, verbose_name='Maximum Density of Sand')
+    CTRG_MIDD = models.FloatField(null=True, verbose_name='Minimum Density of Sand')
+    CTRG_DDEN = models.FloatField(null=True, verbose_name='Initial Dry Density')
+    CTRG_BDEN = models.FloatField(null=True, verbose_name='Initial Bulk Density')
+    CTRG_IVR = models.FloatField(null=True, verbose_name='Initial Voids Ratio')
+    CTRG_SAT = models.CharField(max_length=255, blank=True, verbose_name='Method of Saturation')
+    CTRG_DURN = models.CharField(max_length=255, blank=True, verbose_name='Test Duration')
+    CTRG_REM = models.TextField(blank=True, verbose_name='Remarks')
+    CTRG_METH = models.CharField(max_length=255, blank=True, verbose_name='Test Method')
+    CTRG_DEV = models.TextField(blank=True, verbose_name='Deviations from the Test Method')
+    CTRG_LAB = models.CharField(max_length=255, blank=True, verbose_name='Testing Laboratory/Organization')
+    CTRG_CRED = models.CharField(max_length=255, blank=True, verbose_name='Accrediting Body and Reference Number')
+    TEST_STAT = models.CharField(max_length=255, blank=True, verbose_name='Test Status')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - Type: {self.CTRG_TYPE} Lab: {self.CTRG_LAB}"
+    
+class CTRS(models.Model):
+    SAMP_ID = models.ForeignKey(CTRG, on_delete=models.CASCADE, related_name='cyclic_saturation', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    CTRS_TESN = models.IntegerField(verbose_name='Test / Stage Number')
+    CTRS_CELL = models.FloatField(null=True, verbose_name='Saturation Cell Pressure')
+    CTRS_BPWP = models.FloatField(null=True, verbose_name='Saturation Base Porewater Pressure')
+    CTRS_MPWP = models.FloatField(null=True, verbose_name='Saturation Mid-height Porewater Pressure')
+    CTRS_MPB = models.FloatField(null=True, verbose_name='Saturation Mid-height B Value')
+    CTRS_BB = models.FloatField(null=True, verbose_name='Saturation Base B Value')
+    CTRS_SAT = models.CharField(max_length=255, blank=True, verbose_name='Saturation Method')
+    CTRS_FSAT = models.CharField(max_length=255, blank=True, verbose_name='Final Saturation')
+    CTRS_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - {self.CTRS_TESN} - {self.CTRS_SAT}"
+    
+class CTRC(models.Model):
+    SAMP_ID = models.ForeignKey(CTRG, on_delete=models.CASCADE, related_name='cyclic_consolidation', verbose_name='Sample ID')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    CTRC_TESN = models.IntegerField(verbose_name='Test / Stage Number')
+    CTRC_CELL = models.FloatField(null=True, verbose_name='Final Cell Pressure')
+    CTRC_BPWP = models.FloatField(null=True, verbose_name='Base Porewater Pressure')
+    CTRC_MPWP = models.FloatField(null=True, verbose_name='Mid-height Porewater Pressure')
+    CTRC_MPB = models.FloatField(null=True, verbose_name='Mid-height B Value')
+    CTRC_BB = models.FloatField(null=True, verbose_name='Base B Value')
+    CTRC_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Type of Consolidation')
+    CTRC_BACF = models.FloatField(null=True, verbose_name='Final Back Pressure')
+    CTRC_ELAP = models.IntegerField(verbose_name='Duration of Test/Stage Number')
+    CTRC_CHGT = models.FloatField(null=True, verbose_name='Specimen Height at End of Stage')
+    CTRC_DIAE = models.FloatField(null=True, verbose_name='Specimen Diameter at End of Stage')
+    CTRC_MCE = models.FloatField(null=True, verbose_name='Water Content at End of Stage')
+    CTRC_BDE = models.FloatField(null=True, verbose_name='Bulk Density at End of Stage')
+    CTRC_DDE = models.FloatField(null=True, verbose_name='Dry Density at End of Stage')
+    CTRC_RDE = models.FloatField(null=True, verbose_name='Relative Density Index of Sand at End of Stage')
+    CTRC_INCE = models.FloatField(null=True, verbose_name='Voids Ratio at End of Stage')
+    CTRC_ASE = models.FloatField(null=True, verbose_name='Effective Axial Stress at End of Stage')
+    CTRC_RSE = models.FloatField(null=True, verbose_name='Effective Radial Stress at End of Stage')
+    CTRC_SSE = models.FloatField(null=True, verbose_name='Shear Stress at End of Stage')
+    CTRC_DEVE = models.FloatField(null=True, verbose_name='Deviatoric Stress at End of Stage')
+    CTRC_MNSE = models.FloatField(null=True, verbose_name='Mean Effective Stress at End of Stage')
+    CTRC_RTOE = models.FloatField(null=True, verbose_name='Ratio of Radial to Axial Effective Stress at End of Stage')
+    CTRC_EASE = models.FloatField(null=True, verbose_name='External Axial Strain at End of Stage')
+    CTRC_VLSE = models.FloatField(null=True, verbose_name='Volumetric Strain from Measured Volume Change at End of Stage')
+    CTRC_RDSE = models.FloatField(null=True, verbose_name='Radial Strain from Measured Volume Change at End of Stage')
+    CTRC_B = models.FloatField(null=True, verbose_name='B Value')
+    CTRC_BETS = models.CharField(max_length=255, blank=True, verbose_name='Bender Element Test Sequence')
+    CTRC_BEAX = models.CharField(max_length=255, blank=True, verbose_name='Bender Element Axis of Measurement')
+    CTRC_BEDS = models.FloatField(null=True, verbose_name='Distance Between Bender Elements')
+    CTRC_MAT = models.FloatField(null=True, verbose_name='Measured Arrival Time of Propagated Wave')
+    CTRC_MATM = models.CharField(max_length=255, blank=True, verbose_name='Method of Measuring Arrival Time')
+    CTRC_SWV = models.FloatField(null=True, verbose_name='Calculated Shear Wave Velocity')
+    CTRC_SMGM = models.FloatField(null=True, verbose_name='Shear Modulus Gmax')
+    CTRC_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID}: {self.CTRC_TYPE}"
+
+class CTRP(models.Model):
+    CTRC_TESN = models.ForeignKey(CTRC, on_delete=models.CASCADE, related_name='cyclic_derived', verbose_name='Test / Stage Number')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SAMP_ID = models.CharField(max_length=255, blank=True, verbose_name='Sample Unique Identifier')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    CTRP_CYC = models.IntegerField(verbose_name='Cycle Number')
+    CTRP_CYCF = models.IntegerField(verbose_name='Cycle Number of Failure')
+    CTRP_PWPM = models.FloatField(null=True, verbose_name='Maximum Excess Porewater Pressure')
+    CTRP_MNPP = models.FloatField(null=True, verbose_name='Minimum Excess Porewater Pressure')
+    CTRP_MXSS = models.FloatField(null=True, verbose_name='Maximum Shear Stress')
+    CTRP_MNSS = models.FloatField(null=True, verbose_name='Minimum Shear Stress')
+    CTRP_AVSS = models.FloatField(null=True, verbose_name='Mean Shear Stress')
+    CTRP_CSS = models.FloatField(null=True, verbose_name='Cyclic Shear Stress ((Max-Min)/2)')
+    CTRP_ACVS = models.FloatField(null=True, verbose_name='Average Cyclic Axial Stress')
+    CTRP_ASF = models.FloatField(null=True, verbose_name='Axial Strain at Failure')
+    CTRP_FPWP = models.FloatField(null=True, verbose_name='Porewater Pressure at Failure')
+    CTRP_QMAX = models.FloatField(null=True, verbose_name='Maximum Deviatoric Stress')
+    CTRP_QMIN = models.FloatField(null=True, verbose_name='Minimum Deviatoric Stress')
+    CTRP_MNES = models.FloatField(null=True, verbose_name='Mean Effective Stress at End of CTRD_CYC')
+    CTRP_EAMX = models.FloatField(null=True, verbose_name='Maximum Axial Strain')
+    CTRP_EAMN = models.FloatField(null=True, verbose_name='Minimum Axial Strain')
+    CTRP_FVR = models.FloatField(null=True, verbose_name='Final Voids Ratio')
+    CTRP_QEMX = models.FloatField(null=True, verbose_name='Deviatoric Stress at Maximum Axial Strain')
+    CTRP_QEMN = models.FloatField(null=True, verbose_name='Deviatoric Stress at Minimum Axial Strain')
+    CTRP_ESEC = models.FloatField(null=True, verbose_name='Secant Modulus')
+    CTRP_DAMP = models.FloatField(null=True, verbose_name='Damping Ratio')
+    CTRP_MODE = models.CharField(max_length=255, blank=True, verbose_name='Mode of Failure')
+    CTRP_DIPL = models.FloatField(null=True, verbose_name='Percent Difference from Programmed Load')
+    CTRP_OBP = models.TextField(blank=True, verbose_name='Observed Performance (Visual)')
+    CTRP_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID}: Cycle {self.CTRP_CYC} - {self.CTRP_MODE}"
+    
+class CTRD(models.Model):
+    CTRC_TESN = models.ForeignKey(CTRC, on_delete=models.CASCADE, related_name='cyclic_test_data', verbose_name='Test / Stage Number')
+    CTRP_CYC = models.ForeignKey(CTRP, on_delete=models.CASCADE, related_name='cyclic_cycle_data', verbose_name='Cycle Number')
+
+    LOCA_ID = models.CharField(max_length=255, blank=True, verbose_name='Location')
+    SAMP_TOP = models.FloatField(null=True, verbose_name='Depth to Top of Sample')
+    SAMP_REF = models.CharField(max_length=255, blank=True, verbose_name='Sample Reference')
+    SAMP_TYPE = models.CharField(max_length=255, blank=True, verbose_name='Sample Type')
+    SAMP_ID = models.CharField(max_length=255, blank=True, verbose_name='Sample Unique Identifier')
+    SPEC_REF = models.CharField(max_length=255, blank=True, verbose_name='Specimen Reference')
+    SPEC_DPTH = models.FloatField(null=True, verbose_name='Depth to Top of Test Specimen')
+    CTRD_TIME = models.DateTimeField(verbose_name='Date/Time of Reading')
+    CTRD_COND = models.TextField(blank=True, verbose_name='Test Conditions')
+    CTRD_SDIA = models.FloatField(null=True, verbose_name='Specimen Diameter')
+    CTRD_HIGH = models.FloatField(null=True, verbose_name='Specimen Height')
+    CTRD_CELL = models.FloatField(null=True, verbose_name='Cell Pressure')
+    CTRD_BPWP = models.FloatField(null=True, verbose_name='Base Porewater Pressure')
+    CTRD_MPWP = models.FloatField(null=True, verbose_name='Mid-plane Porewater Pressure')
+    CTRD_EAS = models.FloatField(null=True, verbose_name='External Axial Strain')
+    CTRD_LAS1 = models.FloatField(null=True, verbose_name='Local Axial Strain 1')
+    CTRD_LAS2 = models.FloatField(null=True, verbose_name='Local Axial Strain 2')
+    CTRD_VOL = models.FloatField(null=True, verbose_name='Volumetric Strain')
+    CTRD_RAD = models.FloatField(null=True, verbose_name='Radial Strain')
+    CTRD_SHSN = models.FloatField(null=True, verbose_name='Shear Strain')
+    CTRD_SHST = models.FloatField(null=True, verbose_name='Shear Stress')
+    CTRD_DEV = models.FloatField(null=True, verbose_name='Deviatoric Stress')
+    CTRD_PSD = models.FloatField(null=True, verbose_name='Principal Stress Difference')
+    CTRD_MEES = models.FloatField(null=True, verbose_name='Mean Effective Stress')
+    CTRD_SECE = models.FloatField(null=True, verbose_name='Secant Young\'s Modulus (Local)')
+    CTRD_TANE = models.FloatField(null=True, verbose_name='Tangent Young\'s Modulus')
+    CTRD_FREQ = models.FloatField(null=True, verbose_name='Loading Frequency')
+    CTRD_CSTS = models.FloatField(null=True, verbose_name='Cyclic Amplitude')
+    CTRD_ACVS = models.FloatField(null=True, verbose_name='Average Cyclic Axial Stress')
+    CTRD_DAVS = models.FloatField(null=True, verbose_name='Double Amplitude Axial Strain')
+    CTRD_CESR = models.FloatField(null=True, verbose_name='Compression/Extension Stress Ratio')
+    CTRD_EMPR = models.FloatField(null=True, verbose_name='Excess Mid-plane Pore Pressure Ratio')
+    CTRD_EBPR = models.FloatField(null=True, verbose_name='Excess Base Pore Pressure Ratio')
+    CTRD_REM = models.TextField(blank=True, verbose_name='Remarks')
+    FILE_FSET = models.CharField(max_length=255, blank=True, verbose_name='File Reference')
+
+    def __str__(self):
+        return f"{self.SAMP_ID} - id: {self.CTRC_TESN} Cycle {self.CTRP_CYC} Cond: {self.CTRD_COND}"
